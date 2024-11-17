@@ -1,0 +1,12 @@
+# ESP stuff
+esp/build
+esp/sdkconfig
+esp/sdkconfig.old
+# those contains secrets (wifi credentials, etc.)
+esp/sdkconfig.defaults
+esp/sdkconfig.secrets
+
+# ROS 2 stuff
+ros_ws/build
+ros_ws/install
+ros_ws/log

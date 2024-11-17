@@ -1,0 +1,21 @@
+{
+    "C_Cpp.intelliSenseEngine": "default",
+    "files.associations": {
+        "*.sdf": "xml",
+        "*.h": "c",
+        "functional": "cpp",
+        "chrono": "cpp",
+        "memory": "cpp",
+        "string": "cpp",
+        "dummy.hpp": "c"
+    },
+    "editor.formatOnSave": true,
+    "ros.distro": "humble",
+    "ros.rosSetupScript": "/opt/ros/humble/install/setup.bash",
+    "search.exclude": {
+        "ros_ws/build": true,
+        "ros_ws/install": true,
+        "ros_ws/log": true
+    },
+    "cmake.ignoreCMakeListsMissing": true
+}
