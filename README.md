@@ -2,9 +2,11 @@
 
 Source code for the micromouse robot Aether.
 
-Main module: ESP32-S3
+Main module: STM32F466RE
 
-ROS 2 Humble integration (micro-ROS publishing in the background for visualization)
+ROS 2 Humble integration
+
+Probably in future: micro-ROS publishing in the background for visualization.
 
 # Development environment
 
@@ -25,10 +27,23 @@ export PATH="$PATH:$HOME/bin"
 
 Install docker with instructions on their page.
 
+To build all Docker images, run `just docker-build` (or `just bd`).
+Base image is `ros:humble`.
+
+TODO: download packages in Dockerfile so they don't need to download each time a container is started.
+
 ### VS Code
 
 There are settings in this repository to make using it in VS Code easier.
 
 ## Building
 
-To build all Docker images, run `just docker-build`.
+### STM32
+
+`build-stm` / `just b` - builds code for the STM32.
+
+Flashing the device is currently only supported through the VS Code using extension.
+
+### ROS 2
+
+TODO

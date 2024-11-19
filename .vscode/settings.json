@@ -3,11 +3,6 @@
     "files.associations": {
         "*.sdf": "xml",
         "*.h": "c",
-        "functional": "cpp",
-        "chrono": "cpp",
-        "memory": "cpp",
-        "string": "cpp",
-        "dummy.hpp": "c"
     },
     "editor.formatOnSave": true,
     "ros.distro": "humble",
@@ -17,5 +12,15 @@
         "ros_ws/install": true,
         "ros_ws/log": true
     },
-    "cmake.ignoreCMakeListsMissing": true
+    "cmake.ignoreCMakeListsMissing": true,
+    "cmsis-csolution.actions": [
+        {
+            "path": "stm/aether.csolution.yml",
+            "target": "Flash",
+            "config": {
+                "run": "Flash Device",
+                "debug": "Arm Debugger"
+            }
+        }
+    ]
 }

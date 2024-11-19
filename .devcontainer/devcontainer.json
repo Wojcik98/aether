@@ -15,7 +15,11 @@
                 "eamodio.gitlens",
                 "ms-python.isort",
                 "ms-iot.vscode-ros",
-                "nefrob.vscode-just-syntax"
+                "nefrob.vscode-just-syntax",
+                "Arm.keil-studio-pack",
+                "Arm.virtual-hardware",
+                "mcu-debug.debug-tracker-vscode",
+                "mcu-debug.peripheral-viewer"
             ]
         }
     },
@@ -23,7 +27,6 @@
     "runArgs": [
         "--privileged",
         "--group-add=plugdev",
-        "--device=/dev/ttyACM0",
         "--volume=/dev:/dev",
         "--network=host",
         "--name=aether_dev"

@@ -1,10 +1,12 @@
-# ESP stuff
-esp/build
-esp/sdkconfig
-esp/sdkconfig.old
-# those contains secrets (wifi credentials, etc.)
-esp/sdkconfig.defaults
-esp/sdkconfig.secrets
+# STM stuff
+stm/out
+stm/tmp
+stm/aether/RTE
+*.cprj
+*.cbuild.yml
+*.cbuild-pack.yml
+*.cbuild-idx.yml
+*.cbuild-set.yml
 
 # ROS 2 stuff
 ros_ws/build

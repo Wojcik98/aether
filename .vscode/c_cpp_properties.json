@@ -1,22 +1,22 @@
 {
     "configurations": [
         {
-            "name": "ESP-IDF",
-            "compilerPath": "/opt/esp/tools/xtensa-esp-elf/esp-13.2.0_20230928/xtensa-esp-elf/bin/xtensa-esp32s3-elf-gcc",
-            "compileCommands": "${workspaceFolder}/esp/build/compile_commands.json",
-            "includePath": [
-                "/opt/esp/idf/components/**",
-                "${workspaceFolder}/esp/**",
-                "${workspaceFolder}/aether/**"
-            ],
+            "name": "STM32",
+            "compilerPath": "/home/ubuntu/.vcpkg/artifacts/2139c4c6/compilers.arm.armclang/6.23.0/bin/armclang",
+            "compileCommands": "${workspaceFolder}/stm/out/aether/Flash/compile_commands.json",
             "browse": {
                 "path": [
-                    "/opt/esp/idf/components",
-                    "${workspaceFolder}/esp",
+                    "${workspaceFolder}/stm",
                     "${workspaceFolder}/aether"
                 ],
                 "limitSymbolsToIncludedHeaders": true
-            }
+            },
+            "includePath": [
+                "${workspaceFolder}/stm/**",
+                "${workspaceFolder}/aether/**"
+            ],
+            "cStandard": "c11",
+            "cppStandard": "c++11"
         },
         {
             "name": "ROS2",
