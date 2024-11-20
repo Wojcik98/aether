@@ -9,12 +9,17 @@ extern "C" {
 #include "Board_LED.h"     // ::Board Support:LED
 }
 
+#include "vl53l4cd_stm.hpp"
+
 void i2c_config();
 void system_core_clock_config();
 void error_handler();
 
 I2C_HandleTypeDef hi2c1;
 DMA_HandleTypeDef hdma_i2c1_rx;
+
+VL53L4CD_STM tof_i2c;
+VL53L4CD_API tof_api(&tof_i2c);
 
 extern "C" { // Interrupts handlers need to be "visible" in C
 void SysTick_Handler(void) { HAL_IncTick(); }
@@ -46,14 +51,24 @@ int main() {
 
     i2c_config();
 
-    uint8_t msg[] = "Hello, World!\n";
-    uint8_t addr = 0x29;
+    tof_i2c.set_i2c(&hi2c1);
+    tof_api.sensor_init();
+    tof_api.start_ranging();
 
     while (true) {
-        auto result =
-            HAL_I2C_IsDeviceReady(&hi2c1, (uint16_t)(addr << 1), 2, 2);
-        if (result == HAL_OK) {
-            // blink();
+        uint8_t is_data_ready = 0;
+        tof_api.check_for_data_ready(&is_data_ready);
+
+        if (is_data_ready) {
+            VL53L4CD_ResultsData_t data;
+            tof_api.get_result(&data);
+            tof_api.clear_interrupt();
+
+            if (data.distance_mm < 200 && data.distance_mm > 5) {
+                LED_On(0);
+            } else {
+                LED_Off(0);
+            }
         }
     }
 }
@@ -116,12 +131,6 @@ void system_core_clock_config() {
     }
 }
 
-void error_handler() {
-    while (true) {
-        // __NOP(); // Error
-    }
-}
-
 void HAL_MspInit(void) {
     __HAL_RCC_SYSCFG_CLK_ENABLE();
     __HAL_RCC_PWR_CLK_ENABLE();
@@ -145,5 +154,11 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef *hi2c) {
 
         // Peripheral clock enable
         __HAL_RCC_I2C1_CLK_ENABLE();
+    }
+}
+
+void error_handler() {
+    while (true) {
+        // __NOP(); // Error
     }
 }
