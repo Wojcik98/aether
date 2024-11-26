@@ -5,8 +5,8 @@
 #include "stm32f4xx_hal_gpio.h"
 #include "stm32f4xx_hal_i2c.h"
 
-#include "vl53l4cd_api.hpp"
-#include "vl53l4cd_i2c.hpp"
+#include "vl53l4cd_driver/vl53l4cd_api.hpp"
+#include "vl53l4cd_driver/vl53l4cd_i2c.hpp"
 
 class VL53L4CD_STM : public VL53L4CD_I2C {
 public:

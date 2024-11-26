@@ -14,7 +14,7 @@
 #ifndef VL53L4CD_API_HPP_
 #define VL53L4CD_API_HPP_
 
-#include "vl53l4cd_i2c.hpp"
+#include "vl53l4cd_driver/vl53l4cd_i2c.hpp"
 
 /**
  *  @brief Driver version

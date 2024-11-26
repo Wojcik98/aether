@@ -13,7 +13,7 @@ project:
         - __MICROLIB
       misc:
         - C:
-            - -std=c11
+            - -std=gnu11
             - -Wno-missing-prototypes
           C-CPP:
             - -funsigned-char
@@ -35,7 +35,7 @@ project:
             - -fno-rtti
           CPP:
             - -xc++
-            - -std=c++11
+            - -std=gnu++17
           Link:
             - --library_type=microlib
             - --map
@@ -53,16 +53,13 @@ project:
   groups:
     - group: Source Files
       files:
-        - file: main.cpp
-        - file: vl53l4cd_stm.cpp
+        - file: src/main.cpp
+        - file: src/vl53l4cd_stm.cpp
+    - group: VL53L4CD Driver
+      files:
         - file: vl53l4cd_driver/src/vl53l4cd_api.cpp
         - file: vl53l4cd_driver/src/vl53l4cd_calibration.cpp
-    - group: Header Files
-      files:
-        - file: vl53l4cd_stm.hpp
-        - file: vl53l4cd_driver/include/vl53l4cd_api.hpp
-        - file: vl53l4cd_driver/include/vl53l4cd_i2c.hpp
-        - file: vl53l4cd_driver/include/vl53l4cd_calibration.hpp
+  add-path: [include, vl53l4cd_driver/include]
 
   # List components to use for your application.
   # A software component is a re-usable unit that may be configurable.

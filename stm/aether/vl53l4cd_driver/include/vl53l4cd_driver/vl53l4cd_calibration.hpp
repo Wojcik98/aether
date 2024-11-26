@@ -19,8 +19,8 @@
 #ifndef VL53L4CD_CALIBRATION_HPP_
 #define VL53L4CD_CALIBRATION_HPP_
 
-#include "vl53l4cd_api.hpp"
-#include "vl53l4cd_i2c.hpp"
+#include "vl53l4cd_driver/vl53l4cd_api.hpp"
+#include "vl53l4cd_driver/vl53l4cd_i2c.hpp"
 
 class VL53L4CD_Calibration {
 public:
