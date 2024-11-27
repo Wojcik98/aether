@@ -11,6 +11,11 @@ extern "C" {
 
 #include "vl53l4cd_stm.hpp"
 
+#include "aether/map_confident.hpp"
+#include "aether/map_in_progress.hpp"
+#include "aether/mapped_localization.hpp"
+#include "aether/robot_config.hpp"
+
 void i2c_config();
 void system_core_clock_config();
 void error_handler();
@@ -21,11 +26,33 @@ DMA_HandleTypeDef hdma_i2c1_rx;
 VL53L4CD_STM tof_i2c;
 VL53L4CD_API tof_api(&tof_i2c);
 
-extern "C" { // Interrupts handlers need to be "visible" in C
-void SysTick_Handler(void) { HAL_IncTick(); }
-}
+constexpr RobotConfig robot_config = {
+    .robot_length = 0.18f,
+    .motors_offset = 0.06f,
+    .robot_width = 0.12f,
+    .wheel_radius = 0.03f,
+    .wheel_base = 0.12f,
+    .wall_width = 0.012f,
+    .cell_size = 0.18f,
+    .starting_x = 0.072f,
+    .starting_y = -0.09f,
+    .starting_yaw = 0.0f,
+    .freq_imu_enc = 100,
+    .freq_tofs = 10,
+    .tofs_poses =
+        {
+            {0.0f, 0.0f, 0.0f}, // right_side
+            {0.0f, 0.0f, 0.0f}, // right_diag
+            {0.0f, 0.0f, 0.0f}, // right_front
+            {0.0f, 0.0f, 0.0f}, // left_front
+            {0.0f, 0.0f, 0.0f}, // left_diag
+            {0.0f, 0.0f, 0.0f}, // left_side
+        },
+};
 
-void HAL_IncTick(void) { uwTick += 1; }
+MapInProgress map_in_progress;
+MapConfident map_confident(map_in_progress);
+MappedLocalization localization(robot_config, map_confident);
 
 void blink() {
     LED_On(0);
@@ -72,6 +99,12 @@ int main() {
         }
     }
 }
+
+extern "C" { // Interrupts handlers need to be "visible" in C
+void SysTick_Handler(void) { HAL_IncTick(); }
+}
+
+void HAL_IncTick(void) { uwTick += 1; }
 
 void i2c_config() {
     hi2c1.Instance = I2C1;

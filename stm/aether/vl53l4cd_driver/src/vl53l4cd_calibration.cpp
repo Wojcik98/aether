@@ -16,8 +16,8 @@
  * @brief Calibration functions implementation
  */
 
-#include "vl53l4cd_calibration.hpp"
-#include "vl53l4cd_api.hpp"
+#include "vl53l4cd_driver/vl53l4cd_calibration.hpp"
+#include "vl53l4cd_driver/vl53l4cd_api.hpp"
 #include <math.h>
 
 VL53L4CD_Error VL53L4CD_Calibration::calibrate_offset(
