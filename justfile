@@ -1,7 +1,9 @@
 import 'docker/docker.just'
 
 alias bd := docker-build
+alias br := build-ros
 alias b := build-stm
+alias xs := xhost-stuff
 
 default:
     @just --list
@@ -19,3 +21,8 @@ build-ros:
 [doc("Should be executed from host, not inside docker.")]
 docker-build: docker-build-aether
     @echo "All docker images built!"
+
+[doc("Should be executed from host, not inside docker.")]
+xhost-stuff:
+    @sudo xhost +local:docker
+    @sudo xhost +
