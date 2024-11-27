@@ -23,12 +23,22 @@
             ]
         }
     },
+    "initializeCommand": ".devcontainer/xhost_stuff.sh",
     "postCreateCommand": "echo '. /aether_entrypoint.sh' >> ~/.bashrc",
     "runArgs": [
+        "-e DISPLAY=:0",
+        "-e QT_X11_NO_MITSHM=1",
+        "-e XAUTHORITY=/tmp/.docker.xauth",
+        "--volume=/tmp/.docker.xauth:/tmp/.docker.xauth",
+        "--volume=/tmp/.X11-unix:/tmp/.X11-unix",
+        "--volume=/etc/localtime:/etc/localtime:ro",
+        "--volume=/dev:/dev",
+        "--runtime=nvidia",
+        "--gpus=all",
         "--privileged",
         "--group-add=plugdev",
-        "--volume=/dev:/dev",
         "--network=host",
+        "--ipc=host",
         "--name=aether_dev"
     ]
 }
