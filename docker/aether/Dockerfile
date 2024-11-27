@@ -14,8 +14,9 @@ RUN apt-get update && apt-get install -y \
     unzip \
     vim \
     less \
-    openssh-client && \
-    rm -rf /var/lib/apt/lists/*
+    openssh-client \
+    libnvidia-egl-wayland1 \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install `just` tool to /usr/bin and generate bash completions
 RUN curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to /usr/bin && \
@@ -29,6 +30,8 @@ USER $USER_ID
 WORKDIR /home/$USER_ID
 
 RUN . <(curl https://aka.ms/vcpkg-init.sh -L)
+COPY vcpkg-configuration.json /home/$USER_ID/vcpkg-configuration.json
+RUN . ~/.vcpkg/vcpkg-init && vcpkg-shell activate
 
 ENTRYPOINT ["/aether_entrypoint.sh"]
 CMD ["/bin/bash"]
