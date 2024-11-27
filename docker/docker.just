@@ -1,4 +1,4 @@
-docker_img_ros_base := "ros:humble"
+docker_img_ros_base := "ghcr.io/sloretz/ros:jazzy-desktop-full"
 # docker_img_rosmicro := "aether/micro-ros"
 docker_img_aether := "aether/aether"
 

@@ -1,16 +1,14 @@
-ARG BASE_IMAGE=ros:humble
+ARG BASE_IMAGE=ghcr.io/sloretz/ros:jazzy-desktop-full
 FROM ${BASE_IMAGE}
 
 ARG USER_ID=ubuntu
 
-RUN useradd --create-home --home-dir /home/$USER_ID --shell /bin/bash --user-group --groups adm,sudo $USER_ID && \
-    echo $USER_ID:$USER_ID | chpasswd && \
+RUN echo $USER_ID:$USER_ID | chpasswd && \
     echo "$USER_ID ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 RUN apt-get update && apt-get install -y \
     udev \
     libusb-1.0-0 \
-    libncurses5 \
     wget \
     curl \
     unzip \

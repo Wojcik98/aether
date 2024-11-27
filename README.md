@@ -4,7 +4,7 @@ Source code for the micromouse robot Aether.
 
 Main module: STM32F466RE
 
-ROS 2 Humble integration
+ROS 2 Jazzy integration
 
 Probably in future: micro-ROS publishing in the background for visualization.
 
@@ -28,7 +28,7 @@ export PATH="$PATH:$HOME/bin"
 Install docker with instructions on their page.
 
 To build all Docker images, run `just docker-build` (or `just bd`).
-Base image is `ros:humble`.
+Base image is `ghcr.io/sloretz/ros:jazzy-desktop-full`.
 
 TODO: download packages in Dockerfile so they don't need to download each time a container is started.
 

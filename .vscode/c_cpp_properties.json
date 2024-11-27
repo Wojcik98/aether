@@ -23,14 +23,14 @@
             "compilerPath": "/usr/bin/gcc",
             "compileCommands": "${workspaceFolder}/ros_ws/build/compile_commands.json",
             "includePath": [
-                "/opt/ros/humble/include/**",
+                "/opt/ros/jazzy/include/**",
                 "${workspaceFolder}/ros_ws/**",
                 "${workspaceFolder}/aether/**",
                 "/usr/include/**"
             ],
             "browse": {
                 "path": [
-                    "/opt/ros/humble/include",
+                    "/opt/ros/jazzy/include",
                     "${workspaceFolder}/ros_ws",
                     "${workspaceFolder}/aether",
                     "/usr/include"

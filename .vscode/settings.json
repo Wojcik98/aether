@@ -5,8 +5,8 @@
         "*.h": "c",
     },
     "editor.formatOnSave": true,
-    "ros.distro": "humble",
-    "ros.rosSetupScript": "/opt/ros/humble/install/setup.bash",
+    "ros.distro": "jazzy",
+    "ros.rosSetupScript": "/opt/ros/jazzy/install/setup.bash",
     "search.exclude": {
         "ros_ws/build": true,
         "ros_ws/install": true,
