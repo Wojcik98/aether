@@ -24,7 +24,7 @@
         }
     },
     "initializeCommand": ".devcontainer/xhost_stuff.sh",
-    "postCreateCommand": "echo '. /aether_entrypoint.sh' >> ~/.bashrc",
+    "postCreateCommand": "echo '. /aether_entrypoint.sh' >> ~/.bashrc && echo 'export DISPLAY=:0' >> ~/.bashrc",
     "runArgs": [
         "-e DISPLAY=:0",
         "-e QT_X11_NO_MITSHM=1",
