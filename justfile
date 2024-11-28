@@ -4,6 +4,7 @@ alias bd := docker-build
 alias br := build-ros
 alias b := build-stm
 alias xs := xhost-stuff
+alias l := launch
 
 default:
     @just --list
@@ -17,6 +18,9 @@ build-ros:
     echo "Building ROS 2 workspace..."
     cd ros_ws
     colcon build --symlink-install --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
+launch:
+    ros2 launch aether_bringup aether_sim.launch.py
 
 [doc("Should be executed from host, not inside docker.")]
 docker-build: docker-build-aether
