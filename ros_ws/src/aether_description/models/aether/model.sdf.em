@@ -41,6 +41,22 @@ def material(color_name):
         </material>
     """)
 
+def empty_inertial():
+    """Prints an empty inertial block"""
+    print("""
+        <inertial>
+            <mass>0.0000001</mass>
+            <inertia>
+                <ixx>0.0000001</ixx>
+                <ixy>0.0</ixy>
+                <ixz>0.0</ixz>
+                <iyy>0.0000001</iyy>
+                <iyz>0.0</iyz>
+                <izz>0.0000001</izz>
+            </inertia>
+        </inertial>
+    """)
+
 }@
 <sdf version="1.8">
     <model name="aether">
@@ -50,14 +66,7 @@ def material(color_name):
         </plugin>
         <link name="base_link">
             <pose>0 0 0 0 0 0</pose>
-            <inertial>
-                <mass>0.0</mass>
-                <inertia>
-                    <ixx>0.0</ixx>
-                    <iyy>0.0</iyy>
-                    <izz>0.0</izz>
-                </inertia>
-            </inertial>
+            @(empty_inertial())
         </link>
         <joint name="base_to_chassis" type="fixed">
             <parent>base_link</parent>
@@ -116,70 +125,37 @@ empy.include(template_path("wheel.sdf.em"), {
     "relative_to": "chassis_link",
     "name": "right_wheel"
 })
+empy.include(template_path("tof.sdf.em"), {
+    "name": "tof_right_side",
+    "pose": [0.02, -0.035, 0, 0, 0, -math.pi / 2],
+    "relative_to": "chassis_link"
+})
+empy.include(template_path("tof.sdf.em"), {
+    "name": "tof_right_diag",
+    "pose": [0.03, 0.015, 0, 0, 0, -math.pi / 4],
+    "relative_to": "chassis_link"
+})
+empy.include(template_path("tof.sdf.em"), {
+    "name": "tof_right_front",
+    "pose": [0.03, -0.025, 0, 0, 0, 0],
+    "relative_to": "chassis_link"
+})
+empy.include(template_path("tof.sdf.em"), {
+    "name": "tof_left_front",
+    "pose": [0.03, 0.025, 0, 0, 0, 0],
+    "relative_to": "chassis_link"
+})
+empy.include(template_path("tof.sdf.em"), {
+    "name": "tof_left_diag",
+    "pose": [0.03, -0.015, 0, 0, 0, math.pi / 4],
+    "relative_to": "chassis_link"
+})
+empy.include(template_path("tof.sdf.em"), {
+    "name": "tof_left_side",
+    "pose": [0.02, 0.035, 0, 0, 0, math.pi / 2],
+    "relative_to": "chassis_link"
+})
 }@
-        <link name="lidar_link">
-            <pose relative_to="base_link">0 0 0.01 0 0 0</pose>
-            <inertial>
-                <mass>0.01</mass>
-                <inertia>
-                    <ixx>0.000166667</ixx>
-                    <iyy>0.000166667</iyy>
-                    <izz>0.000166667</izz>
-                </inertia>
-            </inertial>
-            <collision name="lidar_collision">
-                <geometry>
-                    <box>
-                        <size>0.01 0.01 0.01</size>
-                    </box>
-                </geometry>
-            </collision>
-            <visual name="lidar_visual">
-                <geometry>
-                    <box>
-                        <size>0.01 0.01 0.01</size>
-                    </box>
-                </geometry>
-            </visual>
-            <sensor name="gpu_lidar" type="gpu_lidar">
-                <pose>0 0 0 0 0 0</pose>
-                <topic>scan</topic>
-                <gz_frame_id>lidar_link</gz_frame_id>
-                <update_rate>10</update_rate>
-                <lidar>
-                    <scan>
-                        <horizontal>
-                            <samples>1</samples>
-                            <resolution>1</resolution>
-                            <min_angle>0.0</min_angle>
-                            <max_angle>0.0</max_angle>
-                        </horizontal>
-                        <vertical>
-                            <samples>1</samples>
-                            <resolution>1</resolution>
-                            <min_angle>0.0</min_angle>
-                            <max_angle>0.0</max_angle>
-                        </vertical>
-                    </scan>
-                    <range>
-                        <min>0.001</min>
-                        <max>1.3</max>
-                        <resolution>0.001</resolution>
-                    </range>
-                    <noise>
-                        <type>gaussian</type>
-                        <mean>0.0</mean>
-                        <stddev>0.01</stddev>
-                    </noise>
-                </lidar>
-                <visualize>true</visualize>
-            </sensor>
-        </link>
-
-        <joint name="lidar_joint" type="fixed">
-            <parent>chassis_link</parent>
-            <child>lidar_link</child>
-        </joint>
 
         <plugin
         filename="ignition-gazebo-diff-drive-system"

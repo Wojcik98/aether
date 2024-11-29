@@ -6,6 +6,7 @@ Panels:
       Expanded:
         - /Global Options1
         - /RobotModel1/Description Topic1
+        - /ToF sensors1
       Splitter Ratio: 0.5
     Tree Height: 2281
   - Class: rviz_common/Selection
@@ -60,9 +61,31 @@ Visualization Manager:
           Value: true
         left_wheel:
           Value: true
-        lidar_link:
-          Value: true
         right_wheel:
+          Value: true
+        tof_left_diag_link:
+          Value: true
+        tof_left_diag_optical_frame:
+          Value: true
+        tof_left_front_link:
+          Value: true
+        tof_left_front_optical_frame:
+          Value: true
+        tof_left_side_link:
+          Value: true
+        tof_left_side_optical_frame:
+          Value: true
+        tof_right_diag_link:
+          Value: true
+        tof_right_diag_optical_frame:
+          Value: true
+        tof_right_front_link:
+          Value: true
+        tof_right_front_optical_frame:
+          Value: true
+        tof_right_side_link:
+          Value: true
+        tof_right_side_optical_frame:
           Value: true
       Marker Scale: 0.10000000149011612
       Name: TF
@@ -72,10 +95,26 @@ Visualization Manager:
       Tree:
         base_link:
           chassis_link:
-            lidar_link:
-              {}
             right_wheel:
               {}
+            tof_left_diag_link:
+              tof_left_diag_optical_frame:
+                {}
+            tof_left_front_link:
+              tof_left_front_optical_frame:
+                {}
+            tof_left_side_link:
+              tof_left_side_optical_frame:
+                {}
+            tof_right_diag_link:
+              tof_right_diag_optical_frame:
+                {}
+            tof_right_front_link:
+              tof_right_front_optical_frame:
+                {}
+            tof_right_side_link:
+              tof_right_side_optical_frame:
+                {}
           left_wheel:
             {}
       Update Interval: 0
@@ -112,16 +151,65 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        lidar_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
         right_wheel:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
+        tof_left_diag_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        tof_left_diag_optical_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        tof_left_front_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        tof_left_front_optical_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        tof_left_side_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        tof_left_side_optical_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        tof_right_diag_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        tof_right_diag_optical_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        tof_right_front_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        tof_right_front_optical_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        tof_right_side_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        tof_right_side_optical_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
       Mass Properties:
         Inertia: false
         Mass: false
@@ -130,20 +218,94 @@ Visualization Manager:
       Update Interval: 0
       Value: true
       Visual Enabled: true
-    - Alpha: 0.5
-      Buffer Length: 1
-      Class: rviz_default_plugins/Range
-      Color: 79; 179; 255
+    - Class: rviz_common/Group
+      Displays:
+        - Alpha: 0.5
+          Buffer Length: 1
+          Class: rviz_default_plugins/Range
+          Color: 79; 179; 255
+          Enabled: true
+          Name: right_side
+          Topic:
+            Depth: 5
+            Durability Policy: Volatile
+            Filter size: 10
+            History Policy: Keep Last
+            Reliability Policy: Best Effort
+            Value: /aether/tof_right_side/range
+          Value: true
+        - Alpha: 0.5
+          Buffer Length: 1
+          Class: rviz_default_plugins/Range
+          Color: 79; 179; 255
+          Enabled: true
+          Name: right_diag
+          Topic:
+            Depth: 5
+            Durability Policy: Volatile
+            Filter size: 10
+            History Policy: Keep Last
+            Reliability Policy: Best Effort
+            Value: /aether/tof_right_diag/range
+          Value: true
+        - Alpha: 0.5
+          Buffer Length: 1
+          Class: rviz_default_plugins/Range
+          Color: 79; 179; 255
+          Enabled: true
+          Name: right_front
+          Topic:
+            Depth: 5
+            Durability Policy: Volatile
+            Filter size: 10
+            History Policy: Keep Last
+            Reliability Policy: Best Effort
+            Value: /aether/tof_right_front/range
+          Value: true
+        - Alpha: 0.5
+          Buffer Length: 1
+          Class: rviz_default_plugins/Range
+          Color: 79; 179; 255
+          Enabled: true
+          Name: left_front
+          Topic:
+            Depth: 5
+            Durability Policy: Volatile
+            Filter size: 10
+            History Policy: Keep Last
+            Reliability Policy: Best Effort
+            Value: /aether/tof_left_front/range
+          Value: true
+        - Alpha: 0.5
+          Buffer Length: 1
+          Class: rviz_default_plugins/Range
+          Color: 79; 179; 255
+          Enabled: true
+          Name: left_diag
+          Topic:
+            Depth: 5
+            Durability Policy: Volatile
+            Filter size: 10
+            History Policy: Keep Last
+            Reliability Policy: Best Effort
+            Value: /aether/tof_left_diag/range
+          Value: true
+        - Alpha: 0.5
+          Buffer Length: 1
+          Class: rviz_default_plugins/Range
+          Color: 79; 179; 255
+          Enabled: true
+          Name: left_side
+          Topic:
+            Depth: 5
+            Durability Policy: Volatile
+            Filter size: 10
+            History Policy: Keep Last
+            Reliability Policy: Best Effort
+            Value: /aether/tof_left_side/range
+          Value: true
       Enabled: true
-      Name: Range
-      Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        Filter size: 10
-        History Policy: Keep Last
-        Reliability Policy: Best Effort
-        Value: /aether/range
-      Value: true
+      Name: ToF sensors
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -190,25 +352,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 0.528568685054779
+      Distance: 0.46550309658050537
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0
-        Y: 0
-        Z: 0
+        X: 0.03284087032079697
+        Y: -0.013760948553681374
+        Z: 0.0014774482697248459
       Focal Shape Fixed Size: false
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.5653984546661377
+      Pitch: 1.039794921875
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 2.0085742473602295
+      Yaw: 3.1435375213623047
     Saved: ~
 Window Geometry:
   Displays:

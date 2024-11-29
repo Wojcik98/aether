@@ -1,3 +1,4 @@
+import math
 import os
 
 from ament_index_python.packages import get_package_share_directory
@@ -46,7 +47,7 @@ def generate_launch_description():
             {
                 "name": "aether",
                 "string": robot_desc,
-                "z": 0.1,
+                "z": 0.03,
             }
         ],
         output="screen",
@@ -94,15 +95,24 @@ def generate_launch_description():
         output="screen",
     )
 
+    # Convert LiDAR scans to range measurements
+    tof_names = [
+        "tof_right_side",
+        "tof_right_diag",
+        "tof_right_front",
+        "tof_left_front",
+        "tof_left_diag",
+        "tof_left_side",
+    ]
     lidar_to_range = Node(
         package="aether_gazebo",
         executable="lidar_to_range",
         output="screen",
         parameters=[
             {
-                "lidar_topics": ["/aether/scan"],
-                "range_topics": ["/aether/range"],
-                "fov": 0.314159,
+                "lidar_topics": [f"/aether/{name}/scan" for name in tof_names],
+                "range_topics": [f"/aether/{name}/range" for name in tof_names],
+                "fov": math.radians(18),
             }
         ],
     )
