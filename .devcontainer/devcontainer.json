@@ -24,11 +24,14 @@
         }
     },
     "initializeCommand": ".devcontainer/xhost_stuff.sh",
-    "postCreateCommand": "echo '. /aether_entrypoint.sh' >> ~/.bashrc && echo 'export DISPLAY=:0' >> ~/.bashrc",
+    "postCreateCommand": "echo '. /aether_entrypoint.sh' >> ~/.bashrc",
+    "containerEnv": {
+        "DISPLAY": "${localEnv:DISPLAY}",
+        "QT_X11_NO_MITSHM": "1",
+        "XAUTHORITY": "/tmp/.docker.xauth",
+        "NVIDIA_DRIVER_CAPABILITIES": "all"
+    },
     "runArgs": [
-        "-e DISPLAY=:0",
-        "-e QT_X11_NO_MITSHM=1",
-        "-e XAUTHORITY=/tmp/.docker.xauth",
         "--volume=/tmp/.docker.xauth:/tmp/.docker.xauth",
         "--volume=/tmp/.X11-unix:/tmp/.X11-unix",
         "--volume=/etc/localtime:/etc/localtime:ro",
