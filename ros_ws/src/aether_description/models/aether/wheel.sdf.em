@@ -1,9 +1,11 @@
 @{
 # inputs: radius, length, mass, side, wheel_offset[3], relative_to, name
 import math
-y_offset = wheel_offset[1] + length / 2
+y_offset = wheel_offset[1]
 if side == "right":
-    y_offset = -y_offset
+    y_offset -= length / 2
+else:
+    y_offset += length / 2
 roll = -math.pi / 2 if side == "left" else math.pi / 2
 }@
 <joint name="@(name)_joint" type="revolute">

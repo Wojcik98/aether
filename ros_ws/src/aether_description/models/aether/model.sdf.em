@@ -13,11 +13,13 @@ wheel_length = 0.01
 wheel_mass = 0.010
 
 # Calculated properties
-wheel_offset = [
-    -0.02,
-    chassis_size[1] / 2,
-    0.0,
-]
+wheel_offset_x = wheel_radius * 1.1
+wheel_offset_y = chassis_size[1] / 2 + 0.001
+wheel_offset_z = wheel_radius * 0.6
+
+motor_radius = 0.008
+motor_length = 0.02
+motor_mass = 0.02
 
 pkg = os.path.join(get_package_share_directory("aether_description"))
 
@@ -74,7 +76,7 @@ def empty_inertial():
         </joint>
 
         <link name="chassis_link">
-            <pose relative_to="base_link">0 0 0 0 0 0</pose>
+            <pose relative_to="base_link">0.01 0 0 0 0 0</pose>
 @{
 empy.include(template_path("inertial_box.sdf.em"), {
     "size": chassis_size,
@@ -107,24 +109,7 @@ empy.include(template_path("inertial_box.sdf.em"), {
         </link>
 
 @{
-empy.include(template_path("wheel.sdf.em"), {
-    "radius": wheel_radius,
-    "length": wheel_length,
-    "mass": wheel_mass,
-    "side": "left",
-    "wheel_offset": wheel_offset,
-    "relative_to": "base_link",
-    "name": "left_wheel"
-})
-empy.include(template_path("wheel.sdf.em"), {
-    "radius": wheel_radius,
-    "length": wheel_length,
-    "mass": wheel_mass,
-    "side": "right",
-    "wheel_offset": wheel_offset,
-    "relative_to": "chassis_link",
-    "name": "right_wheel"
-})
+# ToF sensors
 empy.include(template_path("tof.sdf.em"), {
     "name": "tof_right_side",
     "pose": [0.02, -0.035, 0, 0, 0, -math.pi / 2],
@@ -155,15 +140,73 @@ empy.include(template_path("tof.sdf.em"), {
     "pose": [0.02, 0.035, 0, 0, 0, math.pi / 2],
     "relative_to": "chassis_link"
 })
+
+# Wheels
+empy.include(template_path("wheel.sdf.em"), {
+    "radius": wheel_radius,
+    "length": wheel_length,
+    "mass": wheel_mass,
+    "side": "left",
+    "wheel_offset": [wheel_offset_x, wheel_offset_y, wheel_offset_z],
+    "relative_to": "base_link",
+    "name": "left_front_wheel"
+})
+empy.include(template_path("wheel.sdf.em"), {
+    "radius": wheel_radius,
+    "length": wheel_length,
+    "mass": wheel_mass,
+    "side": "left",
+    "wheel_offset": [-wheel_offset_x, wheel_offset_y, wheel_offset_z],
+    "relative_to": "base_link",
+    "name": "left_rear_wheel"
+})
+empy.include(template_path("wheel.sdf.em"), {
+    "radius": wheel_radius,
+    "length": wheel_length,
+    "mass": wheel_mass,
+    "side": "right",
+    "wheel_offset": [wheel_offset_x, -wheel_offset_y, wheel_offset_z],
+    "relative_to": "base_link",
+    "name": "right_front_wheel"
+})
+empy.include(template_path("wheel.sdf.em"), {
+    "radius": wheel_radius,
+    "length": wheel_length,
+    "mass": wheel_mass,
+    "side": "right",
+    "wheel_offset": [-wheel_offset_x, -wheel_offset_y, wheel_offset_z],
+    "relative_to": "base_link",
+    "name": "right_rear_wheel"
+})
+
+# Motors
+empy.include(template_path("motor.sdf.em"), {
+    "name": "left_motor",
+    "relative_to": "base_link",
+    "pose": [0, motor_length * 0.7, motor_radius + chassis_size[2] / 2, -math.pi / 2, 0, 0],
+    "motor_radius": motor_radius,
+    "motor_length": motor_length,
+    "motor_mass": motor_mass
+})
+empy.include(template_path("motor.sdf.em"), {
+    "name": "right_motor",
+    "relative_to": "base_link",
+    "pose": [0, -motor_length * 0.7, motor_radius + chassis_size[2] / 2, math.pi / 2, 0, 0],
+    "motor_radius": motor_radius,
+    "motor_length": motor_length,
+    "motor_mass": motor_mass
+})
 }@
 
         <plugin
-        filename="ignition-gazebo-diff-drive-system"
-        name="ignition::gazebo::systems::DiffDrive">
-            <left_joint>left_wheel_joint</left_joint>
-            <right_joint>right_wheel_joint</right_joint>
-            <wheel_separation>0.1</wheel_separation>
-            <wheel_radius>0.01</wheel_radius>
+        filename="gz-sim-diff-drive-system"
+        name="gz::sim::systems::DiffDrive">
+            <left_joint>left_front_wheel_joint</left_joint>
+            <left_joint>left_rear_wheel_joint</left_joint>
+            <right_joint>right_front_wheel_joint</right_joint>
+            <right_joint>right_rear_wheel_joint</right_joint>
+            <wheel_separation>@(chassis_size[1] + wheel_length )</wheel_separation>
+            <wheel_radius>@(wheel_radius)</wheel_radius>
             <odom_publish_frequency>5</odom_publish_frequency>
             <max_linear_acceleration>5</max_linear_acceleration>
             <min_linear_acceleration>-5</min_linear_acceleration>
