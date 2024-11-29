@@ -94,6 +94,19 @@ def generate_launch_description():
         output="screen",
     )
 
+    lidar_to_range = Node(
+        package="aether_gazebo",
+        executable="lidar_to_range",
+        output="screen",
+        parameters=[
+            {
+                "lidar_topics": ["/aether/scan"],
+                "range_topics": ["/aether/range"],
+                "fov": 0.314159,
+            }
+        ],
+    )
+
     return LaunchDescription(
         [
             gz_sim,
@@ -101,5 +114,6 @@ def generate_launch_description():
             bridge,
             robot_state_publisher,
             rviz,
+            lidar_to_range,
         ]
     )
