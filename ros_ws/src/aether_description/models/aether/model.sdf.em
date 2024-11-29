@@ -5,8 +5,8 @@ import os
 from ament_index_python.packages import get_package_share_directory
 
 # Inputs
-chassis_size = [0.1, 0.1, 0.005]
-chassis_mass = 0.05
+chassis_size = [0.08, 0.08, 0.002]
+chassis_mass = 0.03
 
 wheel_radius = 0.01
 wheel_length = 0.01
@@ -15,21 +15,24 @@ wheel_mass = 0.010
 # Calculated properties
 wheel_offset = [
     -0.02,
-    chassis_size[1] /2,
+    chassis_size[1] / 2,
     0.0,
 ]
 
 pkg = os.path.join(get_package_share_directory("aether_description"))
 
 def template_path(file_path):
-  return os.path.join(pkg, "models", "aether", file_path)
+    return os.path.join(pkg, "models", "aether", file_path)
+
+colors = {
+    "grey": "0.8 0.8 0.8 1",
+    "black": "0 0 0 1",
+    "purple": "0.5 0 0.5 1",
+}
 
 def material(color_name):
     """Prints a material with a given color"""
-    if color_name == "grey":
-        color = "0.8 0.8 0.8 1"
-    elif color_name == "black":
-        color = "0 0 0 1"
+    color = colors.get(color_name, "0.8 0.8 0.8 1")
     print(f"""
         <material>
           <diffuse>{color}</diffuse>
@@ -45,75 +48,55 @@ def material(color_name):
             filename="gz-sim-joint-state-publisher-system"
             name="gz::sim::systems::JointStatePublisher">
         </plugin>
-        <frame name="base_link"/>
+        <link name="base_link">
+            <pose>0 0 0 0 0 0</pose>
+            <inertial>
+                <mass>0.0</mass>
+                <inertia>
+                    <ixx>0.0</ixx>
+                    <iyy>0.0</iyy>
+                    <izz>0.0</izz>
+                </inertia>
+            </inertial>
+        </link>
+        <joint name="base_to_chassis" type="fixed">
+            <parent>base_link</parent>
+            <child>chassis_link</child>
+        </joint>
 
         <link name="chassis_link">
             <pose relative_to="base_link">0 0 0 0 0 0</pose>
-            <inertial>
-                <mass>0.05</mass>
-                <inertia>
-                    <ixx>0.01</ixx>
-                    <ixy>0</ixy>
-                    <ixz>0</ixz>
-                    <iyy>0.01</iyy>
-                    <iyz>0</iyz>
-                    <izz>0.01</izz>
-                </inertia>
-            </inertial>
+@{
+empy.include(template_path("inertial_box.sdf.em"), {
+    "size": chassis_size,
+    "mass": chassis_mass
+})
+}@
             <visual name="chassis_visual">
                 <geometry>
                     <box>
-                        <size>0.1 0.1 0.005</size>
+                        <size>
+                            @(chassis_size[0])
+                            @(chassis_size[1])
+                            @(chassis_size[2])
+                        </size>
                     </box>
                 </geometry>
-                <material>
-                    <ambient>0.5 0.5 1.0 1</ambient>
-                    <diffuse>0.5 0.5 1.0 1</diffuse>
-                    <specular>0.0 0.0 1.0 1</specular>
-                </material>
+                @(material("purple"))
             </visual>
             <collision name="chassis_collision">
                 <geometry>
                     <box>
-                        <size>0.1 0.1 0.005</size>
+                        <size>
+                            @(chassis_size[0])
+                            @(chassis_size[1])
+                            @(chassis_size[2])
+                        </size>
                     </box>
                 </geometry>
             </collision>
         </link>
 
-        <!--<link name="left_wheel">
-            <pose relative_to="base_link">0 -0.075 0 0 0 0</pose>
-            <inertial>
-                <mass>0.05</mass>
-                <inertia>
-                    <ixx>0.01</ixx>
-                    <ixy>0</ixy>
-                    <ixz>0</ixz>
-                    <iyy>0.01</iyy>
-                    <iyz>0</iyz>
-                    <izz>0.01</izz>
-                </inertia>
-            </inertial>
-            <visual name="left_wheel_visual">
-                <geometry>
-                    <sphere>
-                        <radius>0.01</radius>
-                    </sphere>
-                </geometry>
-                <material>
-                    <ambient>0.2 0.2 0.2 1</ambient>
-                    <diffuse>0.2 0.2 0.2 1</diffuse>
-                    <specular>0.2 0.2 0.2 1</specular>
-                </material>
-            </visual>
-            <collision name="left_wheel_collision">
-                <geometry>
-                    <sphere>
-                        <radius>0.01</radius>
-                    </sphere>
-                </geometry>
-            </collision>
-        </link>-->
 @{
 empy.include(template_path("wheel.sdf.em"), {
     "radius": wheel_radius,
@@ -121,7 +104,7 @@ empy.include(template_path("wheel.sdf.em"), {
     "mass": wheel_mass,
     "side": "left",
     "wheel_offset": wheel_offset,
-    "relative_to": "chassis_link",
+    "relative_to": "base_link",
     "name": "left_wheel"
 })
 empy.include(template_path("wheel.sdf.em"), {
@@ -135,7 +118,7 @@ empy.include(template_path("wheel.sdf.em"), {
 })
 }@
         <link name="lidar_link">
-            <pose>0 0 0 0 0 0</pose>
+            <pose relative_to="base_link">0 0 0.01 0 0 0</pose>
             <inertial>
                 <mass>0.01</mass>
                 <inertia>
@@ -161,15 +144,15 @@ empy.include(template_path("wheel.sdf.em"), {
             <sensor name="gpu_lidar" type="gpu_lidar">
                 <pose>0 0 0 0 0 0</pose>
                 <topic>scan</topic>
-                <gz_frame_id>aether/lidar_link</gz_frame_id>
+                <gz_frame_id>lidar_link</gz_frame_id>
                 <update_rate>10</update_rate>
                 <lidar>
                     <scan>
                         <horizontal>
-                            <samples>640</samples>
+                            <samples>1</samples>
                             <resolution>1</resolution>
-                            <min_angle>-1.396263</min_angle>
-                            <max_angle>1.396263</max_angle>
+                            <min_angle>0.0</min_angle>
+                            <max_angle>0.0</max_angle>
                         </horizontal>
                         <vertical>
                             <samples>1</samples>
@@ -179,10 +162,15 @@ empy.include(template_path("wheel.sdf.em"), {
                         </vertical>
                     </scan>
                     <range>
-                        <min>0.08</min>
-                        <max>10.0</max>
-                        <resolution>0.01</resolution>
+                        <min>0.001</min>
+                        <max>1.3</max>
+                        <resolution>0.001</resolution>
                     </range>
+                    <noise>
+                        <type>gaussian</type>
+                        <mean>0.0</mean>
+                        <stddev>0.01</stddev>
+                    </noise>
                 </lidar>
                 <visualize>true</visualize>
             </sensor>
@@ -191,23 +179,7 @@ empy.include(template_path("wheel.sdf.em"), {
         <joint name="lidar_joint" type="fixed">
             <parent>chassis_link</parent>
             <child>lidar_link</child>
-            <pose>0 0 0.05 0 0 0</pose>
         </joint>
-
-        <!--
-        <joint name="left_wheel_joint" type="revolute">
-            <parent>chassis_link</parent>
-            <child>left_wheel</child>
-            <pose>0 -0.75 0 0 0 0</pose>
-            <axis>
-                <xyz>0 0 1</xyz>
-                <limit>
-                    <lower>-1.79769e+308</lower>
-                    <upper>1.79769e+308</upper>
-                </limit>
-            </axis>
-        </joint>
-        -->
 
         <plugin
         filename="ignition-gazebo-diff-drive-system"
