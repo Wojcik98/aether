@@ -5,6 +5,7 @@ alias br := build-ros
 alias b := build-stm
 alias xs := xhost-stuff
 alias l := launch
+alias dt := dev-terminal
 
 default:
     @just --list
@@ -21,6 +22,10 @@ build-ros:
 
 launch:
     ros2 launch aether_bringup aether_sim.launch.py
+
+[doc("Should be executed from host, not inside docker.")]
+dev-terminal:
+    @docker exec -it -w /workspaces/aether aether_dev env TERM=xterm-256color bash -l
 
 [doc("Should be executed from host, not inside docker.")]
 docker-build: docker-build-aether
