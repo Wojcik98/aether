@@ -210,12 +210,12 @@ empy.include(template_path("motor.sdf.em"), {
             <odom_publish_frequency>5</odom_publish_frequency>
             <max_linear_acceleration>5</max_linear_acceleration>
             <min_linear_acceleration>-5</min_linear_acceleration>
-            <max_angular_acceleration>5</max_angular_acceleration>
-            <min_angular_acceleration>-5</min_angular_acceleration>
+            <max_angular_acceleration>20</max_angular_acceleration>
+            <min_angular_acceleration>-20</min_angular_acceleration>
             <max_linear_velocity>3.5</max_linear_velocity>
             <min_linear_velocity>-3.5</min_linear_velocity>
-            <max_angular_velocity>5</max_angular_velocity>
-            <min_angular_velocity>-5</min_angular_velocity>
+            <max_angular_velocity>10</max_angular_velocity>
+            <min_angular_velocity>-10</min_angular_velocity>
         </plugin>
     </model>
 </sdf>

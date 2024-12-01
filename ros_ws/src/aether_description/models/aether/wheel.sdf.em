@@ -7,12 +7,13 @@ if side == "right":
 else:
     y_offset += length / 2
 roll = -math.pi / 2 if side == "left" else math.pi / 2
+z_axis = "0 0 1" if side == "left" else "0 0 -1"
 }@
 <joint name="@(name)_joint" type="revolute">
   <parent>@(relative_to)</parent>
   <child>@(name)</child>
   <axis>
-    <xyz>0 0 1</xyz>
+    <xyz>@(z_axis)</xyz>
   </axis>
 </joint>
 <link name="@(name)">
