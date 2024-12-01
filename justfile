@@ -23,6 +23,12 @@ build-ros:
 launch:
     ros2 launch aether_bringup aether_sim.launch.py
 
+clean-ros:
+    #!/bin/bash
+    echo "Cleaning ROS 2 workspace..."
+    cd ros_ws
+    rm -rf build install log
+
 [doc("Should be executed from host, not inside docker.")]
 dev-terminal:
     @docker exec -it -w /workspaces/aether aether_dev env TERM=xterm-256color bash -l

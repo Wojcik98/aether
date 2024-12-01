@@ -1,6 +1,8 @@
 @{
 # inputs: name, pose, relative_to
+from aether_description.sdf_utils import empty_inertial, material, box_inertial, box_geometry
 tof_size = [0.003, 0.01, 0.01]
+tof_mass = 0.003
 }@
 <joint name="@(name)_joint" type="fixed">
     <parent>@(relative_to)</parent>
@@ -15,19 +17,10 @@ tof_size = [0.003, 0.01, 0.01]
         @(pose[4])
         @(pose[5])
     </pose>
-@{
-empy.include(template_path("inertial_box.sdf.em"), {
-    "size": tof_size,
-    "mass": 0.003
-})
-}@
+    @(box_inertial(tof_size, tof_mass))
     <!-- the sensor doesn't need collision -->
     <visual name="@(name)_visual">
-        <geometry>
-            <box>
-                <size>@(tof_size[0]) @(tof_size[1]) @(tof_size[2])</size>
-            </box>
-        </geometry>
+        @(box_geometry(tof_size))
         @(material("purple"))
     </visual>
 </link>

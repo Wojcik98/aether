@@ -1,5 +1,6 @@
 @{
 # inputs: name, relative_to, pose, motor_radius, motor_length, motor_mass
+from aether_description.sdf_utils import material, cylinder_inertial, cylinder_geometry
 }@
 <link name="@(name)_link">
     <pose relative_to="@(relative_to)">
@@ -10,20 +11,9 @@
         @(pose[4])
         @(pose[5])
     </pose>
-@{
-empy.include(template_path("inertial_cylinder.sdf.em"), {
-    "mass": motor_mass,
-    "radius": motor_radius,
-    "length": motor_length,
-})
-}@
+    @(cylinder_inertial(motor_radius, motor_length, motor_mass))
     <visual name="@(name)_visual">
-        <geometry>
-            <cylinder>
-                <radius>@(motor_radius)</radius>
-                <length>@(motor_length)</length>
-            </cylinder>
-        </geometry>
+        @(cylinder_geometry(motor_radius, motor_length))
         @(material("black"))
     </visual>
 </link>

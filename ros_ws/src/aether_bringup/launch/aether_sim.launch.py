@@ -10,6 +10,7 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
 
 import em
+import yaml
 
 
 def generate_launch_description():
@@ -21,13 +22,16 @@ def generate_launch_description():
     pkg_project_description = get_package_share_directory("aether_description")
     pkg_ros_gz_sim = get_package_share_directory("ros_gz_sim")
 
-    # Load the SDF file from "description" package
+    # Load the SDF template from "description" package
+    robot_config_path = os.path.join(pkg_project_bringup, "config", "robot_config.yaml")
+    with open(robot_config_path) as robot_config_file:
+        robot_config = yaml.safe_load(robot_config_file)
     template_path = os.path.join(
         pkg_project_description, "models", "aether", "model.sdf.em"
     )
     with open(template_path) as template_file:
         template = template_file.read()
-    robot_desc = em.expand(template, {})
+    robot_desc = em.expand(template, {"config": robot_config})
 
     # Setup to launch the simulator and Gazebo world
     world_path = os.path.join(pkg_project_gazebo, "worlds", "simple_maze.sdf")

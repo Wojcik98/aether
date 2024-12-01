@@ -1,63 +1,39 @@
 <?xml version="1.0" ?>
 @{
+# inputs: config
 import math
 import os
 from ament_index_python.packages import get_package_share_directory
 
-# Inputs
-chassis_size = [0.08, 0.08, 0.002]
-chassis_mass = 0.03
+from aether_description.sdf_utils import (
+    empty_inertial,
+    material,
+    box_inertial,
+    pose_2D_to_3D,
+)
 
-wheel_radius = 0.01
-wheel_length = 0.01
-wheel_mass = 0.010
+chassis_size = config["chassis_size"]
+chassis_mass = config["chassis_mass"]
+
+wheel_radius = config["wheel_radius"]
+wheel_length = config["wheel_length"]
+wheel_mass = config["wheel_mass"]
+
+motor_radius = config["motor_radius"]
+motor_length = config["motor_length"]
+motor_mass = config["motor_mass"]
+
+tofs_poses = config["tofs_poses"]
 
 # Calculated properties
 wheel_offset_x = wheel_radius * 1.1
 wheel_offset_y = chassis_size[1] / 2 + 0.001
 wheel_offset_z = wheel_radius * 0.6
 
-motor_radius = 0.008
-motor_length = 0.02
-motor_mass = 0.02
-
 pkg = os.path.join(get_package_share_directory("aether_description"))
 
 def template_path(file_path):
     return os.path.join(pkg, "models", "aether", file_path)
-
-colors = {
-    "grey": "0.8 0.8 0.8 1",
-    "black": "0 0 0 1",
-    "purple": "0.5 0 0.5 1",
-}
-
-def material(color_name):
-    """Prints a material with a given color"""
-    color = colors.get(color_name, "0.8 0.8 0.8 1")
-    print(f"""
-        <material>
-          <diffuse>{color}</diffuse>
-          <specular>{color}</specular>
-          <ambient>{color}</ambient>
-        </material>
-    """)
-
-def empty_inertial():
-    """Prints an empty inertial block"""
-    print("""
-        <inertial>
-            <mass>0.0000001</mass>
-            <inertia>
-                <ixx>0.0000001</ixx>
-                <ixy>0.0</ixy>
-                <ixz>0.0</ixz>
-                <iyy>0.0000001</iyy>
-                <iyz>0.0</iyz>
-                <izz>0.0000001</izz>
-            </inertia>
-        </inertial>
-    """)
 
 }@
 <sdf version="1.8">
@@ -77,12 +53,7 @@ def empty_inertial():
 
         <link name="chassis_link">
             <pose relative_to="base_link">0.01 0 0 0 0 0</pose>
-@{
-empy.include(template_path("inertial_box.sdf.em"), {
-    "size": chassis_size,
-    "mass": chassis_mass
-})
-}@
+            @(box_inertial(chassis_size, chassis_mass))
             <visual name="chassis_visual">
                 <geometry>
                     <box>
@@ -110,36 +81,12 @@ empy.include(template_path("inertial_box.sdf.em"), {
 
 @{
 # ToF sensors
-empy.include(template_path("tof.sdf.em"), {
-    "name": "tof_right_side",
-    "pose": [0.02, -0.035, 0, 0, 0, -math.pi / 2],
-    "relative_to": "chassis_link"
-})
-empy.include(template_path("tof.sdf.em"), {
-    "name": "tof_right_diag",
-    "pose": [0.03, 0.015, 0, 0, 0, -math.pi / 4],
-    "relative_to": "chassis_link"
-})
-empy.include(template_path("tof.sdf.em"), {
-    "name": "tof_right_front",
-    "pose": [0.03, -0.025, 0, 0, 0, 0],
-    "relative_to": "chassis_link"
-})
-empy.include(template_path("tof.sdf.em"), {
-    "name": "tof_left_front",
-    "pose": [0.03, 0.025, 0, 0, 0, 0],
-    "relative_to": "chassis_link"
-})
-empy.include(template_path("tof.sdf.em"), {
-    "name": "tof_left_diag",
-    "pose": [0.03, -0.015, 0, 0, 0, math.pi / 4],
-    "relative_to": "chassis_link"
-})
-empy.include(template_path("tof.sdf.em"), {
-    "name": "tof_left_side",
-    "pose": [0.02, 0.035, 0, 0, 0, math.pi / 2],
-    "relative_to": "chassis_link"
-})
+for tof_name, tof_pose in tofs_poses.items():
+    empy.include(template_path("tof.sdf.em"), {
+        "name": f"tof_{tof_name}",
+        "pose": pose_2D_to_3D(tof_pose),
+        "relative_to": "chassis_link"
+    })
 
 # Wheels
 empy.include(template_path("wheel.sdf.em"), {
@@ -207,7 +154,7 @@ empy.include(template_path("motor.sdf.em"), {
             <right_joint>right_rear_wheel_joint</right_joint>
             <wheel_separation>@(chassis_size[1] + wheel_length )</wheel_separation>
             <wheel_radius>@(wheel_radius)</wheel_radius>
-            <odom_publish_frequency>5</odom_publish_frequency>
+            <odom_publish_frequency>100</odom_publish_frequency>
             <max_linear_acceleration>5</max_linear_acceleration>
             <min_linear_acceleration>-5</min_linear_acceleration>
             <max_angular_acceleration>20</max_angular_acceleration>

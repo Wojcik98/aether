@@ -1,5 +1,6 @@
 @{
 # inputs: radius, length, mass, side, wheel_offset[3], relative_to, name
+from aether_description.sdf_utils import material, cylinder_inertial, cylinder_geometry
 import math
 y_offset = wheel_offset[1]
 if side == "right":
@@ -26,27 +27,11 @@ z_axis = "0 0 1" if side == "left" else "0 0 -1"
         0
     </pose>
     <visual name="visual">
-        <geometry>
-            <cylinder>
-                <radius>@(radius)</radius>
-                <length>@(length)</length>
-            </cylinder>
-        </geometry>
+        @(cylinder_geometry(radius, length))
         @(material("black"))
     </visual>
     <collision name="collision">
-        <geometry>
-            <cylinder>
-                <radius>@(radius)</radius>
-                <length>@(length)</length>
-            </cylinder>
-        </geometry>
+        @(cylinder_geometry(radius, length))
     </collision>
-@{
-empy.include(template_path("inertial_cylinder.sdf.em"), {
-    "mass": wheel_mass,
-    "radius": radius,
-    "length": length,
-})
-}@
+    @(cylinder_inertial(radius, length, mass))
 </link>
