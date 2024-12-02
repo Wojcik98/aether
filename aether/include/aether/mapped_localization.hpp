@@ -16,8 +16,7 @@ class MappedLocalization : public Localization {
 public:
     static constexpr uint16_t NUM_PARTICLES = 10;
 
-    MappedLocalization(const RobotConfig &robot_config,
-                       const MapConfident &map);
+    MappedLocalization(const MapConfident &map);
 
     void reset(Time time) override;
 
@@ -45,7 +44,6 @@ private:
         float weight;
     };
 
-    const RobotConfig &robot_config_;
     const MapConfident &map_;
 
     std::array<Particle, NUM_PARTICLES> particles_;
@@ -54,8 +52,7 @@ private:
 
     bool collision_detected_;
 
-    void motion_model(float dt, const EncoderData &encoder_data,
-                      const ImuData &imu_data);
+    void motion_model(const EncoderData &encoder_data, const ImuData &imu_data);
     float particle_probability(const Particle &particle,
                                const TofsReadings &tofs_data);
 

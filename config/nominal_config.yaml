@@ -1,0 +1,24 @@
+wall_width: 0.012
+cell_size: 0.168
+maze_size: [4, 4]
+
+freq_imu_enc: 100
+freq_tofs: 100
+
+chassis_size: [0.08, 0.08, 0.002]
+chassis_mass: 0.03
+
+base_link_to_chassis: [0.01, 0.0, 0.0]
+
+wheel_radius: 0.01
+wheel_length: 0.01
+wheel_mass: 0.01
+
+motor_radius: 0.008
+motor_length: 0.02
+motor_mass: 0.02
+
+tofs_poses:
+  side: [0.03, -0.035, -90]
+  diag: [0.04, 0.015, -45]
+  front: [0.04, -0.025, 0.0]

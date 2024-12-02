@@ -18,6 +18,7 @@ def generate_launch_description():
 
     # Setup project paths
     pkg_project_bringup = get_package_share_directory("aether_bringup")
+    pkg_project_app = get_package_share_directory("aether_app")
     pkg_project_gazebo = get_package_share_directory("aether_gazebo")
     pkg_project_description = get_package_share_directory("aether_description")
     pkg_ros_gz_sim = get_package_share_directory("ros_gz_sim")

@@ -1,3 +1,7 @@
+# Generated config
+aether/include/aether/robot_config.hpp
+ros_ws/src/aether_bringup/config/robot_config.yaml
+
 # STM stuff
 stm/out
 stm/tmp

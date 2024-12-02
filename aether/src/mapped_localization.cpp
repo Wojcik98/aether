@@ -4,9 +4,8 @@
 
 #include "aether/robot_config.hpp"
 
-MappedLocalization::MappedLocalization(const RobotConfig &robot_config,
-                                       const MapConfident &map)
-    : robot_config_(robot_config), map_(map), collision_detected_(false) {
+MappedLocalization::MappedLocalization(const MapConfident &map)
+    : map_(map), collision_detected_(false) {
     reset_particles();
 }
 
@@ -25,17 +24,17 @@ void MappedLocalization::imu_enc_update(Time time, const ImuData &imu_data,
         collision_detected_ = true;
     }
 
-    motion_model(robot_config_.dt_imu_enc(), encoder_data, imu_data);
+    motion_model(encoder_data, imu_data);
     last_predict_ = time;
 }
 
-void MappedLocalization::motion_model(float dt, const EncoderData &encoder_data,
+void MappedLocalization::motion_model(const EncoderData &encoder_data,
                                       const ImuData &imu_data) {
+    constexpr float dt = DT_IMU_ENC;
     // TODO: merge encoder and imu in omega?
     float omega = imu_data.om_z;
     // TODO: right formula?
-    float vx = (encoder_data.om_l + encoder_data.om_r) *
-               robot_config_.wheel_radius / 2.0f;
+    float vx = (encoder_data.om_l + encoder_data.om_r) * WHEEL_RADIUS / 2.0f;
 
     // differential drive model
     // TODO: add noise
@@ -50,6 +49,7 @@ void MappedLocalization::motion_model(float dt, const EncoderData &encoder_data,
 }
 
 void MappedLocalization::tofs_update(Time time, const TofsReadings &tofs_data) {
+    (void)time;
     for (auto &particle : particles_) {
         particle.weight = particle_probability(particle, tofs_data);
     }
@@ -70,9 +70,9 @@ float MappedLocalization::particle_probability(const Particle &particle,
 
 void MappedLocalization::reset_particles() {
     for (auto &particle : particles_) {
-        particle.state.x = robot_config_.starting_x;
-        particle.state.y = robot_config_.starting_y;
-        particle.state.yaw = robot_config_.starting_yaw;
+        particle.state.x = STARTING_X;
+        particle.state.y = STARTING_Y;
+        particle.state.yaw = STARTING_YAW;
         particle.state.vx = 0.0f;
         particle.state.omega = 0.0f;
         particle.weight = 1.0f / NUM_PARTICLES;

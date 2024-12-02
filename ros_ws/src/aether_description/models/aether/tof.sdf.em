@@ -1,5 +1,5 @@
 @{
-# inputs: name, pose, relative_to
+# inputs: name, pose, relative_to, freq
 from aether_description.sdf_utils import empty_inertial, material, box_inertial, box_geometry
 tof_size = [0.003, 0.01, 0.01]
 tof_mass = 0.003
@@ -35,7 +35,7 @@ tof_mass = 0.003
         <pose>0 0 0 0 0 0</pose>
         <topic>@(name)/scan</topic>
         <gz_frame_id>@(name)_optical_frame</gz_frame_id>
-        <update_rate>10</update_rate>
+        <update_rate>@(freq)</update_rate>
         <lidar>
             <scan>
                 <horizontal>

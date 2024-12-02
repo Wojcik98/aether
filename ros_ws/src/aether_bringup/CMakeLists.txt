@@ -5,6 +5,22 @@ project(aether_bringup)
 find_package(ament_cmake REQUIRED)
 find_package(aether_description REQUIRED)
 find_package(aether_gazebo REQUIRED)
+find_package(aether_app REQUIRED)
+
+add_custom_command(
+    OUTPUT
+        ${CMAKE_CURRENT_SOURCE_DIR}/config/robot_config.yaml
+    DEPENDS
+        ${MONOREPO_DIR}/config/nominal_config.yaml
+    COMMAND python3
+        ${MONOREPO_DIR}/config/generate_full_config.py
+        ${MONOREPO_DIR}/config/nominal_config.yaml
+        ${CMAKE_CURRENT_SOURCE_DIR}/config/robot_config.yaml
+)
+add_custom_target(
+    gen_config_target ALL
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/config/robot_config.yaml
+)
 
 # Install project launch files
 install(

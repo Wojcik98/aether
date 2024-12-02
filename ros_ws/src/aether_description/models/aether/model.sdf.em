@@ -27,7 +27,7 @@ tofs_poses = config["tofs_poses"]
 
 # Calculated properties
 wheel_offset_x = wheel_radius * 1.1
-wheel_offset_y = chassis_size[1] / 2 + 0.001
+wheel_offset_y = chassis_size[1] / 2
 wheel_offset_z = wheel_radius * 0.6
 
 pkg = os.path.join(get_package_share_directory("aether_description"))
@@ -52,7 +52,14 @@ def template_path(file_path):
         </joint>
 
         <link name="chassis_link">
-            <pose relative_to="base_link">0.01 0 0 0 0 0</pose>
+            <pose relative_to="base_link">
+                @(config["base_link_to_chassis"][0])
+                @(config["base_link_to_chassis"][1])
+                0
+                0
+                0
+                @(config["base_link_to_chassis"][2])
+            </pose>
             @(box_inertial(chassis_size, chassis_mass))
             <visual name="chassis_visual">
                 <geometry>
@@ -85,7 +92,8 @@ for tof_name, tof_pose in tofs_poses.items():
     empy.include(template_path("tof.sdf.em"), {
         "name": f"tof_{tof_name}",
         "pose": pose_2D_to_3D(tof_pose),
-        "relative_to": "chassis_link"
+        "relative_to": "base_link",
+        "freq" : config["freq_tofs"]
     })
 
 # Wheels
@@ -152,17 +160,9 @@ empy.include(template_path("motor.sdf.em"), {
             <left_joint>left_rear_wheel_joint</left_joint>
             <right_joint>right_front_wheel_joint</right_joint>
             <right_joint>right_rear_wheel_joint</right_joint>
-            <wheel_separation>@(chassis_size[1] + wheel_length )</wheel_separation>
+            <wheel_separation>@(config["wheel_base"])</wheel_separation>
             <wheel_radius>@(wheel_radius)</wheel_radius>
-            <odom_publish_frequency>100</odom_publish_frequency>
-            <max_linear_acceleration>5</max_linear_acceleration>
-            <min_linear_acceleration>-5</min_linear_acceleration>
-            <max_angular_acceleration>20</max_angular_acceleration>
-            <min_angular_acceleration>-20</min_angular_acceleration>
-            <max_linear_velocity>3.5</max_linear_velocity>
-            <min_linear_velocity>-3.5</min_linear_velocity>
-            <max_angular_velocity>10</max_angular_velocity>
-            <min_angular_velocity>-10</min_angular_velocity>
+            <odom_publish_frequency>@(config["freq_imu_enc"])</odom_publish_frequency>
         </plugin>
     </model>
 </sdf>
