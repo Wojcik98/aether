@@ -50,6 +50,7 @@ void MappedLocalization::motion_model(float dt, const EncoderData &encoder_data,
 }
 
 void MappedLocalization::tofs_update(Time time, const TofsReadings &tofs_data) {
+    (void)time;
     for (auto &particle : particles_) {
         particle.weight = particle_probability(particle, tofs_data);
     }

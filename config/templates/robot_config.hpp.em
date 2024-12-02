@@ -1,3 +1,6 @@
+@{
+tofs_poses = config["tofs_poses"]
+}
 #ifndef _AETHER_INCLUDE_ROBOT_CONFIG_HPP_
 #define _AETHER_INCLUDE_ROBOT_CONFIG_HPP_
 
@@ -60,6 +63,14 @@ struct Pose {
     }
 };
 using TofsPoses = TofsData<Pose>;
+
+constexpr TofsPoses poses = {
+@{
+for tof in ["right_side", "right_diag", "right_front", "left_front", "left_diag", "left_side"]:
+    pose = tofs_poses[tof]
+    print(f"    {{{pose[0]}f, {pose[1]}f, {pose[2]}f}},")
+}@
+};
 
 struct RobotConfig {
     const float robot_length;

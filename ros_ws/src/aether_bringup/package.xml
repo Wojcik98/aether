@@ -12,6 +12,7 @@
 
   <depend>ros_gz</depend>
   <depend>sdformat_urdf</depend>
+  <depend>aether_app</depend>
   <depend>aether_description</depend>
   <depend>aether_gazebo</depend>
 

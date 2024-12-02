@@ -1,3 +1,6 @@
+# Generated config
+aether/include/aether/robot_config.hpp
+
 # STM stuff
 stm/out
 stm/tmp

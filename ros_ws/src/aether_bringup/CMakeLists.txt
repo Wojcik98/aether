@@ -5,6 +5,7 @@ project(aether_bringup)
 find_package(ament_cmake REQUIRED)
 find_package(aether_description REQUIRED)
 find_package(aether_gazebo REQUIRED)
+find_package(aether_app REQUIRED)
 
 # Install project launch files
 install(

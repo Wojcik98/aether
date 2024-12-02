@@ -1,0 +1,15 @@
+chassis_size: [0.08, 0.08, 0.002]
+chassis_mass: 0.03
+
+wheel_radius: 0.01
+wheel_length: 0.01
+wheel_mass: 0.01
+
+motor_radius: 0.008
+motor_length: 0.02
+motor_mass: 0.02
+
+tofs_poses:
+  side: [0.02, -0.035, -90]
+  diag: [0.03, 0.015, -45]
+  front: [0.03, -0.025, 0.0]

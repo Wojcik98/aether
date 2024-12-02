@@ -18,12 +18,13 @@ def generate_launch_description():
 
     # Setup project paths
     pkg_project_bringup = get_package_share_directory("aether_bringup")
+    pkg_project_app = get_package_share_directory("aether_app")
     pkg_project_gazebo = get_package_share_directory("aether_gazebo")
     pkg_project_description = get_package_share_directory("aether_description")
     pkg_ros_gz_sim = get_package_share_directory("ros_gz_sim")
 
     # Load the SDF template from "description" package
-    robot_config_path = os.path.join(pkg_project_bringup, "config", "robot_config.yaml")
+    robot_config_path = os.path.join(pkg_project_app, "config", "robot_config.yaml")
     with open(robot_config_path) as robot_config_file:
         robot_config = yaml.safe_load(robot_config_file)
     template_path = os.path.join(

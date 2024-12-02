@@ -17,8 +17,9 @@ build-stm:
 build-ros:
     #!/bin/bash
     echo "Building ROS 2 workspace..."
+    MONOREPO_DIR=$(pwd)
     cd ros_ws
-    colcon build --symlink-install --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+    colcon build --symlink-install --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DMONOREPO_DIR=$MONOREPO_DIR
 
 launch:
     ros2 launch aether_bringup aether_sim.launch.py
