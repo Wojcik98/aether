@@ -5,9 +5,17 @@
 
 class MapConfident {
 public:
+    static constexpr float CONFIDENCE_THRESHOLD = 0.5f;
     MapConfident(MapInProgress &map) : map_(map) {}
 
-    float probability(float x, float y, float std) const;
+    /**
+     * @brief Check if there is an obstacle at the given point (close to the
+     * potential obstacle).
+     *
+     * @param x x coordinate of the point.
+     * @param y y coordinate of the point.
+     */
+    bool is_obstacle(float x, float y) const;
 
 private:
     MapInProgress &map_;

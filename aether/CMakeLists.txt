@@ -9,6 +9,7 @@ add_custom_command(
     OUTPUT
         ${CMAKE_CURRENT_SOURCE_DIR}/include/aether/robot_config.hpp
     DEPENDS
+        ${MONOREPO_DIR}/config/generate_full_config.py
         ${MONOREPO_DIR}/config/nominal_config.yaml
         ${MONOREPO_DIR}/config/templates/robot_config.hpp.em
     COMMAND python3
@@ -20,6 +21,8 @@ add_custom_command(
 # Create the library target
 add_library(${PROJECT_NAME} STATIC
     src/mapped_localization.cpp
+    src/map_in_progress.cpp
+    src/map_confident.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/aether/robot_config.hpp
 )
 

@@ -1,8 +1,12 @@
 #include "aether/mapped_localization.hpp"
 
 #include <cmath>
+#include <cstdint>
+#include <limits>
 
+#include "aether/map_in_progress.hpp"
 #include "aether/robot_config.hpp"
+#include "aether/types.hpp"
 
 MappedLocalization::MappedLocalization(const MapConfident &map)
     : map_(map), collision_detected_(false) {
@@ -50,22 +54,87 @@ void MappedLocalization::motion_model(const EncoderData &encoder_data,
 
 void MappedLocalization::tofs_update(Time time, const TofsReadings &tofs_data) {
     (void)time;
+    float sum_weights = 0.0f;
     for (auto &particle : particles_) {
         particle.weight = particle_probability(particle, tofs_data);
+        sum_weights += particle.weight;
+    }
+
+    for (auto &particle : particles_) {
+        particle.weight /= sum_weights;
     }
 }
 
 float MappedLocalization::particle_probability(const Particle &particle,
                                                const TofsReadings &tofs_data) {
-    std::array<float, NUM_TOFS> probs;
-    for (size_t i = NUM_TOFS; i > 0; --i) {
+    float sum = 0.0f;
+#pragma unroll
+    for (size_t i = 0; i < NUM_TOFS; ++i) {
         const auto &tof = tofs_data[i];
-        float x = particle.state.x + tof.x * cosf(particle.state.yaw);
-        float y = particle.state.y + tof.x * sinf(particle.state.yaw);
-        probs[i] = map_.probability(x, y, tof.std);
+
+        float dist_pred = predict_tof(particle, i);
+        if (std::isinf(tof.dist) && std::isinf(dist_pred)) {
+            // both out of range
+            sum += 0.0f;
+        } else {
+            // works even if one of them is inf, because it will add inf to sum
+            sum += (tof.dist - dist_pred) * (tof.dist - dist_pred) /
+                   (tof.std * tof.std);
+        }
     }
 
-    return 0.0f;
+    return expf(-sum / 2.0f);
+}
+
+float MappedLocalization::predict_tof(const Particle &particle,
+                                      size_t tof_idx) const {
+    // TODO: potentially handle edge cases with angles close to n*PI/2
+    const auto &tof = TOF_POSES[tof_idx];
+    auto tof_g = particle.state * tof;
+    float a = tanf(tof_g.yaw);
+    float b = tof_g.y - tof_g.x / a;
+    // y = f(x) = ax + b
+    // x = g(y) = (y - b) / a
+
+    float dir_x =
+        (M_PI_2f <= tof_g.yaw && tof_g.yaw < 3 * M_PI_2f) ? -1.0f : 1.0f;
+    float dir_y = (tof_g.yaw >= M_PIf) ? -1.0f : 1.0f;
+    float closest_dist = std::numeric_limits<float>::infinity();
+
+    auto [x_cell, y_cell] = MapInProgress::get_cell_coords(tof_g.x, tof_g.y);
+    const float start_x =
+        (dir_x > 0) ? (x_cell + 1) * CELL_SIZE : x_cell * CELL_SIZE;
+    const float start_y =
+        (dir_y > 0) ? (y_cell + 1) * CELL_SIZE : y_cell * CELL_SIZE;
+
+    // first, sweep in x direction
+    for (uint8_t i = 0; i < TOF_RANGE_CELLS; ++i) {
+        const float x = start_x + dir_x * (i * CELL_SIZE - WALL_WIDTH / 2.0f);
+        const float y = a * x + b;
+
+        if (map_.is_obstacle(x, y)) {
+            closest_dist = sqrtf((tof_g.x - x) * (tof_g.x - x) +
+                                 (tof_g.y - y) * (tof_g.y - y));
+            break;
+        }
+    }
+
+    // then, sweep in y direction
+    for (uint8_t i = 0; i < TOF_RANGE_CELLS; ++i) {
+        const float y = start_y + dir_y * (i * CELL_SIZE - WALL_WIDTH / 2.0f);
+        const float x = (y - b) / a;
+
+        if (map_.is_obstacle(x, y)) {
+            float dist = sqrtf((tof_g.x - x) * (tof_g.x - x) +
+                               (tof_g.y - y) * (tof_g.y - y));
+            if (dist < closest_dist) {
+                closest_dist = dist;
+            }
+            break;
+        }
+    }
+
+    return closest_dist;
 }
 
 void MappedLocalization::reset_particles() {
@@ -82,17 +151,11 @@ void MappedLocalization::reset_particles() {
 Pose MappedLocalization::get_latest_pose() {
     Pose pose{0.0f, 0.0f, 0.0f};
 
-    // TODO: weighted average?
-    // TODO: noise
     for (const auto &particle : particles_) {
-        pose.x += particle.state.x;
-        pose.y += particle.state.y;
-        pose.yaw += particle.state.yaw;
+        pose.x += particle.state.x * particle.weight;
+        pose.y += particle.state.y * particle.weight;
+        pose.yaw += particle.state.yaw * particle.weight;
     }
-
-    pose.x /= NUM_PARTICLES;
-    pose.y /= NUM_PARTICLES;
-    pose.yaw /= NUM_PARTICLES;
 
     return pose;
 }

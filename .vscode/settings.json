@@ -4,6 +4,7 @@
         "*.sdf": "xml",
         "*.em": "empy.xml",
         "*.h": "c",
+        "limits": "cpp"
     },
     "editor.formatOnSave": true,
     "ros.distro": "jazzy",

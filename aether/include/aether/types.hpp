@@ -41,12 +41,30 @@ struct Pose {
 };
 using TofsPoses = TofsData<Pose>;
 
-struct UncertainPose {
-    const float x;
-    const float y;
-    const float yaw;
+struct FullState {
+    float x;
+    float y;
+    float yaw;
+
+    float vx;
+    float omega;
+
+    Pose operator*(const Pose &pose) const {
+        // transform pose from local to global frame
+        // TODO: potentially optimize, as I'm mostly using it with constexpr
+        // poses, could precompute cosf and sinf
+        return {
+            x + pose.x * cosf(yaw) - pose.y * sinf(yaw),
+            y + pose.x * sinf(yaw) + pose.y * cosf(yaw),
+            yaw + pose.yaw,
+        };
+    }
+};
+
+struct TofReading {
+    const float dist;
     const float std;
 };
-using TofsReadings = TofsData<UncertainPose>;
+using TofsReadings = TofsData<TofReading>;
 
 #endif // _AETHER_TYPES_HPP_

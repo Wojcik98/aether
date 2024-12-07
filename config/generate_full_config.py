@@ -56,11 +56,17 @@ class ConfigGenerator:
             self.nominal_config["chassis_size"][0] / 2
             - self.nominal_config["base_link_to_chassis"][0]
         )
-        x = self.nominal_config["wall_width"] + rear_to_base_link_dist
-        y = self.nominal_config["wall_width"] + self.nominal_config["cell_size"] / 2
+        x = rear_to_base_link_dist + self.nominal_config["wall_width"] / 2
+        y = self.nominal_config["cell_size"] / 2
         yaw = 0.0
+        cell_inner_size = (
+            self.nominal_config["cell_size"] - self.nominal_config["wall_width"]
+        )
 
-        return {"starting_pose": [x, y, yaw]}
+        return {
+            "starting_pose": [x, y, yaw],
+            "cell_inner_size": cell_inner_size,
+        }
 
     def _get_wheel_base(self) -> dict:
         return {
@@ -71,6 +77,9 @@ class ConfigGenerator:
         }
 
     def _get_tofs_config(self) -> dict:
+        tof_range_cells = math.ceil(
+            self.nominal_config["tof_range"] / (self.nominal_config["cell_size"])
+        )
         tof_side = self._pose_deg_to_rad(self.nominal_config["tofs_poses"]["side"])
         tof_diag = self._pose_deg_to_rad(self.nominal_config["tofs_poses"]["diag"])
         tof_front = self._pose_deg_to_rad(self.nominal_config["tofs_poses"]["front"])
@@ -82,13 +91,15 @@ class ConfigGenerator:
                 "left_side": self._mirror_pose(tof_side),
                 "left_diag": self._mirror_pose(tof_diag),
                 "left_front": self._mirror_pose(tof_front),
-            }
+            },
+            "tof_range_cells": tof_range_cells,
         }
 
     def _get_nominal_values(self) -> dict:
         COPY_KEYS = [
             "wall_width",
             "cell_size",
+            "tof_range",
             "maze_size",
             "freq_imu_enc",
             "freq_tofs",

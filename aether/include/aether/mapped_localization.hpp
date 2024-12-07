@@ -7,6 +7,7 @@
 #include "aether/localization.hpp"
 #include "aether/map_confident.hpp"
 #include "aether/robot_config.hpp"
+#include "aether/types.hpp"
 
 // Localization class that uses finished map to localize the robot.
 // Uses particle filter algorithm.
@@ -30,17 +31,8 @@ public:
     void tofs_update(Time time, const TofsReadings &tofs_data) override;
 
 private:
-    struct State {
-        float x;
-        float y;
-        float yaw;
-
-        float vx;
-        float omega;
-    };
-
     struct Particle {
-        State state;
+        FullState state;
         float weight;
     };
 
@@ -55,6 +47,7 @@ private:
     void motion_model(const EncoderData &encoder_data, const ImuData &imu_data);
     float particle_probability(const Particle &particle,
                                const TofsReadings &tofs_data);
+    float predict_tof(const Particle &particle, size_t tof_idx) const;
 
     void reset_particles();
 };

@@ -29,8 +29,11 @@ constexpr float WHEEL_BASE = @(config["wheel_base"]);
 
 constexpr float WALL_WIDTH = @(config["wall_width"]);
 constexpr float CELL_SIZE = @(config["cell_size"]);
+constexpr float CELL_INNER_SIZE = @(config["cell_inner_size"]);
 constexpr uint8_t MAZE_SIZE_X = @(config["maze_size"][0]);
 constexpr uint8_t MAZE_SIZE_Y = @(config["maze_size"][1]);
+constexpr float TOF_RANGE = @(config["tof_range"]);
+constexpr uint8_t TOF_RANGE_CELLS = @(config["tof_range_cells"]);
 
 constexpr float STARTING_X = @(config["starting_pose"][0]);
 constexpr float STARTING_Y = @(config["starting_pose"][1]);
