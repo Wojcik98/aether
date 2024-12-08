@@ -2,9 +2,6 @@
 
 #include "aether/map_confident.hpp"
 #include "aether/map_interface.hpp"
-#include "aether/mapped_localization.hpp"
-#include "aether/robot_config.hpp"
-#include "aether/types.hpp"
 
 class MapMock : public MapInterface<MapMock> {
 public:
@@ -19,16 +16,16 @@ public:
     }
 };
 
-TEST(LocalizationTest, Dummy) {
+TEST(MapObstaclesTest, Dummy) {
     MapMock map;
     MapConfident<MapMock> map_confident(map);
 
-    MappedLocalization<MapMock> localization(map_confident);
+    // corners are always obstacles
+    EXPECT_EQ(map_confident.is_obstacle(0.0f, 0.0f), true);
 
-    auto pose = localization.get_latest_pose();
-    EXPECT_FLOAT_EQ(pose.x, STARTING_X);
-    EXPECT_FLOAT_EQ(pose.y, STARTING_Y);
-    EXPECT_FLOAT_EQ(pose.yaw, STARTING_YAW);
+    // middle of the cell is never an obstacle
+    EXPECT_EQ(map_confident.is_obstacle(CELL_SIZE / 2.0f, CELL_SIZE / 2.0f),
+              false);
 }
 
 int main(int argc, char **argv) {

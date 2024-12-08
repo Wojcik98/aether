@@ -27,11 +27,17 @@ if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
 
   ament_add_gtest(${PROJECT_NAME}_localization_test test/localization_test.cpp)
+  ament_add_gtest(${PROJECT_NAME}_map_test test/map_test.cpp)
   target_include_directories(${PROJECT_NAME}_localization_test PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
   )
+  target_include_directories(${PROJECT_NAME}_map_test PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+  )
   target_link_libraries(${PROJECT_NAME}_localization_test aether)
+  target_link_libraries(${PROJECT_NAME}_map_test aether)
 endif()
 
 ament_package()

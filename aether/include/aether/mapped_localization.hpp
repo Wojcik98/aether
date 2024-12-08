@@ -6,7 +6,7 @@
 #include <cstdint>
 #include <limits>
 
-#include "aether/localization.hpp"
+#include "aether/localization_interface.hpp"
 #include "aether/map_confident.hpp"
 #include "aether/robot_config.hpp"
 #include "aether/types.hpp"
@@ -15,7 +15,9 @@
 // Uses particle filter algorithm.
 // Assumes that the robot is always in the map.
 // Assumes that the IMU and encoder frequencies are higer than ToF.
-template <class MapImpl> class MappedLocalization : public Localization {
+template <class MapImpl>
+class MappedLocalization
+    : public LocalizationInterface<MappedLocalization<MapImpl>> {
 public:
     static constexpr uint16_t NUM_PARTICLES = 10;
 
@@ -24,13 +26,13 @@ public:
         reset_particles();
     }
 
-    void reset(Time time) override {
+    void reset(Time time) {
         last_predict_ = time;
         collision_detected_ = false;
         reset_particles();
     }
 
-    Pose get_latest_pose() override {
+    Pose get_latest_pose() {
         Pose pose{0.0f, 0.0f, 0.0f};
 
         for (const auto &particle : particles_) {
@@ -42,10 +44,10 @@ public:
         return pose;
     }
 
-    bool collision_detected() override { return collision_detected_; }
+    bool collision_detected() { return collision_detected_; }
 
     void imu_enc_update(Time time, const ImuData &imu_data,
-                        const EncoderData &encoder_data) override {
+                        const EncoderData &encoder_data) {
         // TODO: save data to buffer and process it from another thread.
         // When we run updates from ToF, they can take a while and we don't want
         // to miss any data.
@@ -57,7 +59,7 @@ public:
         last_predict_ = time;
     }
 
-    void tofs_update(Time time, const TofsReadings &tofs_data) override {
+    void tofs_update(Time time, const TofsReadings &tofs_data) {
         (void)time;
         float sum_weights = 0.0f;
         for (auto &particle : particles_) {
