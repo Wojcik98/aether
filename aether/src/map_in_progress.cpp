@@ -13,7 +13,7 @@ CellWalls MapInProgress::get_cell_walls(float x, float y) const {
 }
 
 CellWalls MapInProgress::get_cell_walls(int8_t x, int8_t y) const {
-    y = -y;
+    y = -y; // indexing with positive y values
     return {
         horizontal_walls_[x + 1][y], // north
         vertical_walls_[x][y],       // west

@@ -19,7 +19,8 @@
                 "Arm.keil-studio-pack",
                 "Arm.virtual-hardware",
                 "mcu-debug.debug-tracker-vscode",
-                "mcu-debug.peripheral-viewer"
+                "mcu-debug.peripheral-viewer",
+                "matepek.vscode-catch2-test-adapter"
             ]
         }
     },

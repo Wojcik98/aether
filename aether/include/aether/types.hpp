@@ -1,7 +1,10 @@
 #ifndef _AETHER_TYPES_HPP_
 #define _AETHER_TYPES_HPP_
 
+#include <cmath>
+#include <cstddef>
 #include <cstdint>
+#include <tuple>
 
 constexpr float PI_F = 3.14159265358979f;
 constexpr float PI_2_F = 1.57079632679490f;
@@ -66,5 +69,14 @@ struct TofReading {
     const float std;
 };
 using TofsReadings = TofsData<TofReading>;
+
+using CellCoords = std::tuple<int8_t, int8_t>;
+
+struct CellWalls {
+    float north;
+    float west;
+    float south;
+    float east;
+};
 
 #endif // _AETHER_TYPES_HPP_

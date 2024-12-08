@@ -20,9 +20,7 @@ add_custom_command(
 
 # Create the library target
 add_library(${PROJECT_NAME} STATIC
-    src/mapped_localization.cpp
     src/map_in_progress.cpp
-    src/map_confident.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/aether/robot_config.hpp
 )
 

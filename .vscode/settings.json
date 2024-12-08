@@ -4,7 +4,8 @@
         "*.sdf": "xml",
         "*.em": "empy.xml",
         "*.h": "c",
-        "limits": "cpp"
+        "limits": "cpp",
+        "tuple": "cpp"
     },
     "editor.formatOnSave": true,
     "ros.distro": "jazzy",
@@ -30,5 +31,6 @@
     ],
     "python.analysis.extraPaths": [
         "/opt/ros/jazzy/lib/python3.12/site-packages"
-    ]
+    ],
+    "testMate.cpp.test.executables": "ros_ws/{build,Build,BUILD,out,Out,OUT}/**/*{test,Test,TEST}*"
 }

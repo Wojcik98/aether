@@ -5,23 +5,16 @@
 #include <cstdint>
 #include <tuple>
 
+#include "aether/map_interface.hpp"
 #include "aether/robot_config.hpp"
-
-using CellCoords = std::tuple<int8_t, int8_t>;
-
-struct CellWalls {
-    float north;
-    float west;
-    float south;
-    float east;
-};
+#include "aether/types.hpp"
 
 // Orientation convention:
 // (0, 0) is the middle of the most bottom left post of the maze.
 // x is the vertical axis, y is the horizontal axis, as in the Cartesian plane.
 // IMPORTANT: This means that y values are always negative!
 // North is the positive x direction, west is the positive y direction.
-class MapInProgress {
+class MapInProgress : public MapInterface<MapInProgress> {
 public:
     MapInProgress() = default;
 

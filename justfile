@@ -6,6 +6,7 @@ alias b := build-stm
 alias xs := xhost-stuff
 alias l := launch
 alias dt := dev-terminal
+alias ta := test-aether
 
 default:
     @just --list
@@ -20,6 +21,14 @@ build-ros:
     MONOREPO_DIR=$(pwd)
     cd ros_ws
     colcon build --symlink-install --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DMONOREPO_DIR=$MONOREPO_DIR
+
+test-aether:
+    #!/bin/bash
+    echo "Testing Aether..."
+    cd ros_ws
+    source install/setup.bash
+    colcon test --ctest-args tests --packages-select aether_app
+    colcon test-result --test-result-base build/aether_app --verbose
 
 launch:
     ros2 launch aether_bringup aether_sim.launch.py
