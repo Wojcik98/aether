@@ -18,8 +18,6 @@ class MapInProgress : public MapInterface<MapInProgress> {
 public:
     MapInProgress() = default;
 
-    static CellCoords get_cell_coords(float x, float y);
-
     CellWalls get_cell_walls(float x, float y) const;
     CellWalls get_cell_walls(int8_t x, int8_t y) const;
 

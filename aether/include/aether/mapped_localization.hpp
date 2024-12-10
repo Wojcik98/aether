@@ -5,6 +5,7 @@
 #include <cmath>
 #include <cstdint>
 #include <limits>
+#include <random>
 
 #include "aether/localization_interface.hpp"
 #include "aether/map_confident.hpp"
@@ -72,11 +73,18 @@ public:
         }
     }
 
+    void set_random_seed(uint32_t seed) { gen.seed(seed); }
+
 private:
     struct Particle {
         FullState state;
         float weight;
     };
+
+    std::random_device rd{};
+    std::mt19937 gen{rd()};
+    std::normal_distribution<float> noise_dist{0.0f, 1.0f};
+    float noise(float std) { return noise_dist(gen) * std; }
 
     const MapConfident<MapImpl> &map_;
 
@@ -88,24 +96,28 @@ private:
 
     void motion_model(const EncoderData &encoder_data,
                       const ImuData &imu_data) {
+        constexpr float MODEL_NOISE_X = 0.01f;
+        constexpr float MODEL_NOISE_Y = 0.01f;
+        constexpr float MODEL_NOISE_YAW = 0.01f;
         constexpr float dt = DT_IMU_ENC;
         // TODO: merge encoder and imu in omega?
         float omega = imu_data.om_z;
-        // TODO: right formula?
         float vx =
             (encoder_data.om_l + encoder_data.om_r) * WHEEL_RADIUS / 2.0f;
 
         // differential drive model
-        // TODO: add noise
         for (auto &particle : particles_) {
-            particle.state.x +=
-                particle.state.vx * dt * cosf(particle.state.yaw);
-            particle.state.y +=
-                particle.state.vx * dt * sinf(particle.state.yaw);
-            particle.state.yaw += particle.state.omega * dt;
-
             particle.state.vx = vx;
             particle.state.omega = omega;
+
+            particle.state.x += (particle.state.vx * cosf(particle.state.yaw) +
+                                 noise(MODEL_NOISE_X)) *
+                                dt;
+            particle.state.y += (particle.state.vx * sinf(particle.state.yaw) +
+                                 noise(MODEL_NOISE_Y)) *
+                                dt;
+            particle.state.yaw +=
+                (particle.state.omega + noise(MODEL_NOISE_YAW)) * dt;
         }
     }
 

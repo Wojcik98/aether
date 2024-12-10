@@ -12,11 +12,20 @@ using Time = uint32_t;
 // Using other acceleration axes would require more complex calculations.
 // Using other gyroscope axes is not needed in 2D.
 struct ImuData {
-    float acc_z;
+    static constexpr float GRAVITY = -9.81f;
+
+    explicit ImuData(float om_z) : om_z(om_z), acc_z(GRAVITY) {}
+    ImuData(float om_z, float acc_z) : om_z(om_z), acc_z(acc_z) {}
+    ImuData() : om_z(0.0f), acc_z(GRAVITY) {}
+
     float om_z;
+    float acc_z;
 };
 
 struct EncoderData {
+    EncoderData(float om_l, float om_r) : om_l(om_l), om_r(om_r) {}
+    EncoderData() : om_l(0.0f), om_r(0.0f) {}
+
     float om_l;
     float om_r;
 };

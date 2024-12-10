@@ -16,7 +16,7 @@
                 "${workspaceFolder}/aether/**"
             ],
             "cStandard": "c11",
-            "cppStandard": "c++11"
+            "cppStandard": "c++17"
         },
         {
             "name": "ROS2",
@@ -36,7 +36,9 @@
                     "/usr/include"
                 ],
                 "limitSymbolsToIncludedHeaders": true
-            }
+            },
+            "cStandard": "c11",
+            "cppStandard": "c++17"
         }
     ],
     "version": 4

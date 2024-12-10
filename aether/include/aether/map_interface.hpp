@@ -3,6 +3,7 @@
 
 #include <cstdint>
 
+#include "aether/robot_config.hpp"
 #include "aether/types.hpp"
 
 // Use the Curiously Recurring Template Pattern (CRTP) to allow static
@@ -11,7 +12,10 @@
 
 template <class T> struct MapInterface {
     static CellCoords get_cell_coords(float x, float y) {
-        return T::get_cell_coords(x, y);
+        return {
+            static_cast<int8_t>(x / CELL_SIZE),
+            static_cast<int8_t>(y / CELL_SIZE),
+        };
     }
 
     CellWalls get_cell_walls(float x, float y) const {

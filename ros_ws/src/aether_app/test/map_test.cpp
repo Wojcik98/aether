@@ -5,13 +5,15 @@
 
 class MapMock : public MapInterface<MapMock> {
 public:
-    static CellCoords get_cell_coords(float x, float y) { return {0, 0}; }
-
     CellWalls get_cell_walls(float x, float y) const {
+        (void)x;
+        (void)y;
         return {0.0f, 0.0f, 0.0f, 0.0f};
     }
 
     CellWalls get_cell_walls(int8_t x, int8_t y) const {
+        (void)x;
+        (void)y;
         return {0.0f, 0.0f, 0.0f, 0.0f};
     }
 };
