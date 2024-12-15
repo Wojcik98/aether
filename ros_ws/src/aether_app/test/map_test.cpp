@@ -5,12 +5,6 @@
 
 class MapMock : public MapInterface<MapMock> {
 public:
-    CellWalls get_cell_walls(float x, float y) const {
-        (void)x;
-        (void)y;
-        return {0.0f, 0.0f, 0.0f, 0.0f};
-    }
-
     CellWalls get_cell_walls(int8_t x, int8_t y) const {
         (void)x;
         (void)y;

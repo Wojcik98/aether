@@ -19,7 +19,8 @@ template <class T> struct MapInterface {
     }
 
     CellWalls get_cell_walls(float x, float y) const {
-        return static_cast<const T *>(this)->get_cell_walls(x, y);
+        auto [x_cell, y_cell] = get_cell_coords(x, y);
+        return get_cell_walls(x, y);
     }
 
     CellWalls get_cell_walls(int8_t x, int8_t y) const {

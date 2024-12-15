@@ -28,9 +28,10 @@ install(TARGETS aether_test
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
 
-  ament_add_gtest(${PROJECT_NAME}_localization_test test/localization_test.cpp)
+  ament_add_gtest(${PROJECT_NAME}_motion_model_test test/motion_model_test.cpp)
   ament_add_gtest(${PROJECT_NAME}_map_test test/map_test.cpp)
-  target_include_directories(${PROJECT_NAME}_localization_test PUBLIC
+  ament_add_gtest(${PROJECT_NAME}_tof_reading_test test/tof_reading_test.cpp)
+  target_include_directories(${PROJECT_NAME}_motion_model_test PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
   )
@@ -38,8 +39,13 @@ if(BUILD_TESTING)
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
   )
-  target_link_libraries(${PROJECT_NAME}_localization_test aether)
+  target_include_directories(${PROJECT_NAME}_tof_reading_test PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+  )
+  target_link_libraries(${PROJECT_NAME}_motion_model_test aether)
   target_link_libraries(${PROJECT_NAME}_map_test aether)
+  target_link_libraries(${PROJECT_NAME}_tof_reading_test aether)
 endif()
 
 ament_package()
