@@ -70,7 +70,7 @@ struct TofReading {
 };
 using TofsReadings = TofsData<TofReading>;
 
-using CellCoords = std::tuple<int8_t, int8_t>;
+using CellCoords = std::tuple<int32_t, int32_t>;
 
 struct CellWalls {
     float north;

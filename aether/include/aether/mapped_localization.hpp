@@ -20,8 +20,6 @@ template <class MapImpl>
 class MappedLocalization
     : public LocalizationInterface<MappedLocalization<MapImpl>> {
 public:
-    static constexpr uint16_t NUM_PARTICLES = 10;
-
     MappedLocalization(const MapConfident<MapImpl> &map)
         : map_(map), collision_detected_(false) {
         reset_particles();
@@ -63,13 +61,20 @@ public:
     void tofs_update(Time time, const TofsReadings &tofs_data) {
         (void)time;
         float sum_weights = 0.0f;
+        float sum_weights_sq = 0.0f;
         for (auto &particle : particles_) {
             particle.weight = particle_probability(particle, tofs_data);
             sum_weights += particle.weight;
+            sum_weights_sq += particle.weight * particle.weight;
         }
 
         for (auto &particle : particles_) {
             particle.weight /= sum_weights;
+        }
+
+        float num_effective_particles = 1.0f / sum_weights_sq;
+        if (num_effective_particles < NUM_EFF_PARTICLES_THRESHOLD) {
+            resample_particles();
         }
     }
 
@@ -84,7 +89,11 @@ private:
     std::random_device rd{};
     std::mt19937 gen{rd()};
     std::normal_distribution<float> noise_dist{0.0f, 1.0f};
+    std::uniform_real_distribution<float> uniform_dist{0.0f, 1.0f};
     float noise(float std) { return noise_dist(gen) * std; }
+    float rand_uniform(float a, float b) {
+        return uniform_dist(gen) * (b - a) + a;
+    }
 
     const MapConfident<MapImpl> &map_;
 
@@ -96,8 +105,8 @@ private:
 
     void motion_model(const EncoderData &encoder_data,
                       const ImuData &imu_data) {
-        constexpr float MODEL_NOISE_X = 0.01f;
-        constexpr float MODEL_NOISE_Y = 0.01f;
+        constexpr float MODEL_NOISE_X = 0.001f;
+        constexpr float MODEL_NOISE_Y = 0.001f;
         constexpr float MODEL_NOISE_YAW = 0.01f;
         constexpr float dt = DT_IMU_ENC;
         // TODO: merge encoder and imu in omega?
@@ -142,18 +151,24 @@ private:
 
         return expf(-sum / 2.0f);
     }
+
     float predict_tof(const Particle &particle, size_t tof_idx) const {
-        // TODO: potentially handle edge cases with angles close to n*PI/2
+        constexpr float ZERO_THRESH = 1e-4f;
+
         const auto &tof = TOF_POSES[tof_idx];
         auto tof_g = particle.state * tof;
-        float a = tanf(tof_g.yaw);
-        float b = tof_g.y - tof_g.x / a;
-        // y = f(x) = ax + b
-        // x = g(y) = (y - b) / a
+        float yaw = tof_g.yaw;
+        if (yaw < 0.0f) {
+            yaw += 2.0f * M_PIf;
+        }
 
-        float dir_x =
-            (M_PI_2f <= tof_g.yaw && tof_g.yaw < 3 * M_PI_2f) ? -1.0f : 1.0f;
-        float dir_y = (tof_g.yaw >= M_PIf) ? -1.0f : 1.0f;
+        // line equation: ax + by + c = 0
+        float a = sinf(yaw);
+        float b = -cosf(yaw);
+        float c = -a * tof_g.x - b * tof_g.y;
+
+        float dir_x = (M_PI_2f <= yaw && yaw < 3 * M_PI_2f) ? -1.0f : 1.0f;
+        float dir_y = (yaw >= M_PIf) ? -1.0f : 1.0f;
         float closest_dist = std::numeric_limits<float>::infinity();
 
         auto [x_cell, y_cell] =
@@ -164,35 +179,71 @@ private:
             (dir_y > 0) ? (y_cell + 1) * CELL_SIZE : y_cell * CELL_SIZE;
 
         // first, sweep in x direction
-        for (uint8_t i = 0; i < TOF_RANGE_CELLS; ++i) {
-            const float x =
-                start_x + dir_x * (i * CELL_SIZE - WALL_WIDTH / 2.0f);
-            const float y = a * x + b;
+        if (abs(b) > ZERO_THRESH) {
+            for (uint32_t i = 0; i < TOF_RANGE_CELLS; ++i) {
+                const float x =
+                    start_x + dir_x * (i * CELL_SIZE - WALL_WIDTH / 2.0f);
+                const float y = (-a * x - c) / b;
+                if (is_out_of_bounds(x, y)) {
+                    break;
+                }
 
-            if (map_.is_obstacle(x, y)) {
-                closest_dist = sqrtf((tof_g.x - x) * (tof_g.x - x) +
-                                     (tof_g.y - y) * (tof_g.y - y));
-                break;
+                if (map_.is_obstacle(x, y)) {
+                    closest_dist = sqrtf((tof_g.x - x) * (tof_g.x - x) +
+                                         (tof_g.y - y) * (tof_g.y - y));
+                    break;
+                }
             }
         }
 
         // then, sweep in y direction
-        for (uint8_t i = 0; i < TOF_RANGE_CELLS; ++i) {
-            const float y =
-                start_y + dir_y * (i * CELL_SIZE - WALL_WIDTH / 2.0f);
-            const float x = (y - b) / a;
-
-            if (map_.is_obstacle(x, y)) {
-                float dist = sqrtf((tof_g.x - x) * (tof_g.x - x) +
-                                   (tof_g.y - y) * (tof_g.y - y));
-                if (dist < closest_dist) {
-                    closest_dist = dist;
+        if (abs(a) > ZERO_THRESH) {
+            for (uint32_t i = 0; i < TOF_RANGE_CELLS; ++i) {
+                const float y =
+                    start_y + dir_y * (i * CELL_SIZE - WALL_WIDTH / 2.0f);
+                const float x = (-b * y - c) / a;
+                if (is_out_of_bounds(x, y)) {
+                    break;
                 }
-                break;
+
+                if (map_.is_obstacle(x, y)) {
+                    float dist = sqrtf((tof_g.x - x) * (tof_g.x - x) +
+                                       (tof_g.y - y) * (tof_g.y - y));
+                    if (dist < closest_dist) {
+                        closest_dist = dist;
+                    }
+                    break;
+                }
             }
         }
 
         return closest_dist;
+    }
+
+    void resample_particles() {
+        // use low variance resampling
+        // weights are already normalized
+        std::array<Particle, NUM_PARTICLES> new_particles;
+        float r = rand_uniform(0.0f, 1.0f / NUM_PARTICLES);
+        float c = particles_[0].weight;
+        uint32_t i = 0;
+        for (uint32_t m = 0; m < NUM_PARTICLES; ++m) {
+            float u = r + m * 1.0f / NUM_PARTICLES;
+            while (u > c) {
+                i++;
+                c += particles_[i].weight;
+            }
+            new_particles[m] = particles_[i];
+            // new_particles[m].weight = 1.0f / NUM_PARTICLES;
+            // new_particles[m] = particles_[m];
+        }
+
+        particles_ = new_particles;
+
+        // reset weights
+        for (auto &particle : particles_) {
+            particle.weight = 1.0f / NUM_PARTICLES;
+        }
     }
 
     void reset_particles() {

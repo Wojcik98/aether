@@ -18,7 +18,7 @@ class MapInProgress : public MapInterface<MapInProgress> {
 public:
     MapInProgress() = default;
 
-    CellWalls get_cell_walls(int8_t x, int8_t y) const;
+    CellWalls get_cell_walls(int32_t x, int32_t y) const;
 
 private:
     // The walls are stored in the following way:
@@ -28,9 +28,10 @@ private:
     // vertical_walls_[x][y + 1] is the wall to the right of cell (x, -y)
     // The walls are stored as probabilities that the wall is there.
     // IMPORTNANT: The walls are stored in the negative y direction!
-    std::array<std::array<float, MAZE_SIZE_Y + 1>, MAZE_SIZE_X>
+    std::array<std::array<float, MAZE_SIZE_Y_CELLS + 1>, MAZE_SIZE_X_CELLS>
         horizontal_walls_;
-    std::array<std::array<float, MAZE_SIZE_Y>, MAZE_SIZE_X + 1> vertical_walls_;
+    std::array<std::array<float, MAZE_SIZE_Y_CELLS>, MAZE_SIZE_X_CELLS + 1>
+        vertical_walls_;
 };
 
 #endif // _AETHER_INCLUDE_MAP_IN_PROGRESS_HPP_

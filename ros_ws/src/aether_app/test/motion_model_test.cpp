@@ -8,7 +8,7 @@
 
 class EmptyMapMock : public MapInterface<EmptyMapMock> {
 public:
-    CellWalls get_cell_walls(int8_t x, int8_t y) const {
+    CellWalls get_cell_walls(int32_t x, int32_t y) const {
         (void)x;
         (void)y;
         return {0.0f, 0.0f, 0.0f, 0.0f};

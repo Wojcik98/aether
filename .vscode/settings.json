@@ -5,7 +5,8 @@
         "*.em": "empy.xml",
         "*.h": "c",
         "limits": "cpp",
-        "tuple": "cpp"
+        "tuple": "cpp",
+        "ostream": "cpp"
     },
     "editor.formatOnSave": true,
     "ros.distro": "jazzy",

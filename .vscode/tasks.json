@@ -2,6 +2,16 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "build",
+            "type": "shell",
+            "command": "just build-ros",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        },
+        {
             "type": "arm-debugger.flash",
             "serialNumber": "${command:device-manager.getSerialNumber}",
             "programs": "${command:cmsis-csolution.getBinaryFiles}",

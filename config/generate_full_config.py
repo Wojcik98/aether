@@ -57,7 +57,7 @@ class ConfigGenerator:
             - self.nominal_config["base_link_to_chassis"][0]
         )
         x = rear_to_base_link_dist + self.nominal_config["wall_width"] / 2
-        y = self.nominal_config["cell_size"] / 2
+        y = -self.nominal_config["cell_size"] / 2
         yaw = 0.0
         cell_inner_size = (
             self.nominal_config["cell_size"] - self.nominal_config["wall_width"]
@@ -112,6 +112,8 @@ class ConfigGenerator:
             "motor_radius",
             "motor_length",
             "motor_mass",
+            "num_particles",
+            "num_eff_particles_threshold",
         ]
 
         return {key: self.nominal_config[key] for key in COPY_KEYS}

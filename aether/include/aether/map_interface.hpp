@@ -1,6 +1,7 @@
 #ifndef _AETHER_INCLUDE_MAP_INTERFACE_HPP_
 #define _AETHER_INCLUDE_MAP_INTERFACE_HPP_
 
+#include <cmath>
 #include <cstdint>
 
 #include "aether/robot_config.hpp"
@@ -12,9 +13,11 @@
 
 template <class T> struct MapInterface {
     static CellCoords get_cell_coords(float x, float y) {
+        x = floorf(x / CELL_SIZE);
+        y = floorf(y / CELL_SIZE);
         return {
-            static_cast<int8_t>(x / CELL_SIZE),
-            static_cast<int8_t>(y / CELL_SIZE),
+            static_cast<int32_t>(x),
+            static_cast<int32_t>(y),
         };
     }
 
@@ -23,7 +26,7 @@ template <class T> struct MapInterface {
         return get_cell_walls(x, y);
     }
 
-    CellWalls get_cell_walls(int8_t x, int8_t y) const {
+    CellWalls get_cell_walls(int32_t x, int32_t y) const {
         return static_cast<const T *>(this)->get_cell_walls(x, y);
     }
 };
