@@ -35,7 +35,7 @@ def generate_launch_description():
     robot_desc = em.expand(template, {"config": robot_config})
 
     # Setup to launch the simulator and Gazebo world
-    world_path = os.path.join(pkg_project_gazebo, "worlds", "simple_world.sdf")
+    world_path = os.path.join(pkg_project_gazebo, "worlds", "maze_test.sdf")
     gazebo_config_path = os.path.join(pkg_project_bringup, "config", "gazebo.config")
     gz_sim = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -53,7 +53,10 @@ def generate_launch_description():
             {
                 "name": "aether",
                 "string": robot_desc,
-                "z": 0.03,
+                "x": robot_config["starting_pose"][0],
+                "y": robot_config["starting_pose"][1],
+                "z": 0.0,
+                "yaw": robot_config["starting_pose"][2],
             }
         ],
         output="screen",

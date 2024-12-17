@@ -8,6 +8,8 @@
   <license>MIT</license>
   <author>Michał Wójcik</author>
 
+  <depend>aether_description</depend>
+
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <test_depend>ament_lint_auto</test_depend>

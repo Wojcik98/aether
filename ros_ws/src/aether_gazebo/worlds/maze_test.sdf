@@ -1,0 +1,115 @@
+<?xml version="1.0" ?>
+<sdf version="1.8">
+    <world name="demo">
+        <plugin
+            filename="gz-sim-physics-system"
+            name="gz::sim::systems::Physics">
+        </plugin>
+        <plugin
+            filename="gz-sim-sensors-system"
+            name="gz::sim::systems::Sensors">
+            <render_engine>ogre2</render_engine>
+        </plugin>
+        <plugin
+            filename="gz-sim-imu-system"
+            name="gz::sim::systems::Imu">
+        </plugin>
+        <plugin
+            filename="gz-sim-scene-broadcaster-system"
+            name="gz::sim::systems::SceneBroadcaster">
+        </plugin>
+        <plugin
+            filename="gz-sim-user-commands-system"
+            name="gz::sim::systems::UserCommands">
+        </plugin>
+
+        <light name="sun" type="directional">
+            <cast_shadows>true</cast_shadows>
+            <pose>0 0 10 0 0 0</pose>
+            <diffuse>0.8 0.8 0.8 1</diffuse>
+            <specular>0.2 0.2 0.2 1</specular>
+            <attenuation>
+                <range>1000</range>
+                <constant>0.9</constant>
+                <linear>0.01</linear>
+                <quadratic>0.001</quadratic>
+            </attenuation>
+            <direction>-0.5 0.1 -0.9</direction>
+        </light>
+
+        <model name="ground_plane">
+            <static>true</static>
+            <link name="link">
+                <collision name="collision">
+                    <geometry>
+                        <plane>
+                            <normal>0 0 1</normal>
+                            <size>10 10</size>
+                        </plane>
+                    </geometry>
+                </collision>
+                <visual name="visual">
+                    <geometry>
+                        <plane>
+                            <normal>0 0 1</normal>
+                            <size>10 10</size>
+                        </plane>
+                    </geometry>
+                    <material>
+                        <ambient>0.1 0.1 0.1 1</ambient>
+                        <diffuse>0.1 0.1 0.1 1</diffuse>
+                        <specular>0.1 0.1 0.1 1</specular>
+                    </material>
+                </visual>
+            </link>
+        </model>
+
+        <include>
+            <name>wall_east</name>
+            <pose>0.09 -0.18 0 0 0 0</pose>
+            <uri>package://aether_description/models/maze_wall</uri>
+        </include>
+
+        <include>
+            <name>wall_north</name>
+            <pose>0.18 -0.09 0 0 0 1.5708</pose>
+            <uri>package://aether_description/models/maze_wall</uri>
+        </include>
+
+        <include>
+            <name>wall_west</name>
+            <pose>0.09 0 0 0 0 0</pose>
+            <uri>package://aether_description/models/maze_wall</uri>
+        </include>
+
+        <include>
+            <name>wall_south</name>
+            <pose>0 -0.09 0 0 0 1.5708</pose>
+            <uri>package://aether_description/models/maze_wall</uri>
+        </include>
+
+        <include>
+            <name>post_north_west</name>
+            <pose>0.18 -0.18 0 0 0 0</pose>
+            <uri>package://aether_description/models/maze_post</uri>
+        </include>
+
+        <include>
+            <name>post_north_east</name>
+            <pose>0.18 0 0 0 0 0</pose>
+            <uri>package://aether_description/models/maze_post</uri>
+        </include>
+
+        <include>
+            <name>post_south_west</name>
+            <pose>0 -0.18 0 0 0 0</pose>
+            <uri>package://aether_description/models/maze_post</uri>
+        </include>
+
+        <include>
+            <name>post_south_east</name>
+            <pose>0 0 0 0 0 0</pose>
+            <uri>package://aether_description/models/maze_post</uri>
+        </include>
+    </world>
+</sdf>
