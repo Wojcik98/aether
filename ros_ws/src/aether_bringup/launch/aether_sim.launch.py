@@ -35,13 +35,14 @@ def generate_launch_description():
     robot_desc = em.expand(template, {"config": robot_config})
 
     # Setup to launch the simulator and Gazebo world
-    world_path = os.path.join(pkg_project_gazebo, "worlds", "simple_maze.sdf")
+    world_path = os.path.join(pkg_project_gazebo, "worlds", "simple_world.sdf")
+    gazebo_config_path = os.path.join(pkg_project_bringup, "config", "gazebo.config")
     gz_sim = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(pkg_ros_gz_sim, "launch", "gz_sim.launch.py")
         ),
         launch_arguments={
-            "gz_args": f"-r {world_path}",
+            "gz_args": f"-r {world_path} --gui-config {gazebo_config_path}",
         }.items(),
     )
 
