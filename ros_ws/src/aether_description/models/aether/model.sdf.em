@@ -96,6 +96,14 @@ for tof_name, tof_pose in tofs_poses.items():
         "freq" : config["freq_tofs"]
     })
 
+# IMU
+empy.include(template_path("imu.sdf.em"), {
+    "name": "imu",
+    "pose": [0, 0, chassis_size[2] / 2, 0, 0, 0],
+    "relative_to": "base_link",
+    "freq": config["freq_imu_enc"]
+})
+
 # Wheels
 empy.include(template_path("wheel.sdf.em"), {
     "radius": wheel_radius,
