@@ -1,4 +1,32 @@
 #!/usr/bin/env python3
+from dataclasses import dataclass
+
+
+@dataclass
+class Maze:
+    width: int
+    height: int
+    horizontal_walls: list[list[bool]]
+    vertical_walls: list[list[bool]]
+
+
+def decode_maze_from_text(path: str) -> Maze:
+    """Decodes a maze from a text file."""
+    with open(path) as f:
+        lines = f.readlines()
+    top_height = len(lines)
+    height = (len(lines) - 1) // 2
+    width = (len(lines[0].strip()) - 1) // 2
+
+    horizontal_walls = [
+        [lines[2 * row][2 * col + 1] == "W" for col in range(width)]
+        for row in range(height, -1, -1)
+    ]
+    vertical_walls = [
+        [lines[2 * row - 1][2 * col] == "W" for col in range(width + 1)]
+        for row in range(height, 0, -1)
+    ]
+    return Maze(width, height, horizontal_walls, vertical_walls)
 
 
 def pose_2D_to_3D(pose2D):

@@ -35,7 +35,19 @@ def generate_launch_description():
     robot_desc = em.expand(template, {"config": robot_config})
 
     # Setup to launch the simulator and Gazebo world
-    world_path = os.path.join(pkg_project_gazebo, "worlds", "maze_test.sdf")
+    # world_path = os.path.join(pkg_project_gazebo, "worlds", "maze_test.sdf")
+    world_path = "/tmp/maze.sdf"
+    maze_config_path = os.path.join(
+        pkg_project_bringup, "config", "mazes", "simple.txt"
+    )
+    world_template_path = os.path.join(
+        pkg_project_gazebo, "worlds", "maze_from_config.sdf.em"
+    )
+    with open(world_template_path) as world_template_file:
+        world_template = world_template_file.read()
+    world_desc = em.expand(world_template, {"maze_path": maze_config_path})
+    with open(world_path, "w") as world_file:
+        world_file.write(world_desc)
     gazebo_config_path = os.path.join(pkg_project_bringup, "config", "gazebo.config")
     gz_sim = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
