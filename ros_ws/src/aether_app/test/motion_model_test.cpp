@@ -13,6 +13,12 @@ public:
         (void)y;
         return {0.0f, 0.0f, 0.0f, 0.0f};
     }
+
+    bool is_out_of_bounds(float x, float y) const {
+        (void)x;
+        (void)y;
+        return false;
+    }
 };
 
 class MotionModelTest : public ::testing::Test {

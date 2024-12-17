@@ -49,6 +49,10 @@ public:
         return false;
     }
 
+    bool is_out_of_bounds(float x, float y) const {
+        return map_.is_out_of_bounds(x, y);
+    }
+
 private:
     MapInterface<MapImpl> &map_;
 };

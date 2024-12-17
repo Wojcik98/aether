@@ -29,5 +29,9 @@ template <class T> struct MapInterface {
     CellWalls get_cell_walls(int32_t x, int32_t y) const {
         return static_cast<const T *>(this)->get_cell_walls(x, y);
     }
+
+    bool is_out_of_bounds(float x, float y) const {
+        return static_cast<const T *>(this)->is_out_of_bounds(x, y);
+    }
 };
 #endif // _AETHER_INCLUDE_MAP_INTERFACE_HPP_

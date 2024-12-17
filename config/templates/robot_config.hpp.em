@@ -50,8 +50,4 @@ constexpr float DT_TOFS = 1.0f / FREQ_TOFS;
 constexpr uint32_t NUM_PARTICLES = @(config["num_particles"]);
 constexpr float NUM_EFF_PARTICLES_THRESHOLD = @(config["num_eff_particles_threshold"]);
 
-constexpr bool is_out_of_bounds(float x, float y) {
-    return x < 0.0f || x > MAZE_SIZE_X || y > 0.0f || y < -MAZE_SIZE_Y;
-}
-
 #endif // _AETHER_INCLUDE_ROBOT_CONFIG_HPP_

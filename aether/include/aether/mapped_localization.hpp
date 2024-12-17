@@ -184,7 +184,7 @@ private:
                 const float x =
                     start_x + dir_x * (i * CELL_SIZE - WALL_WIDTH / 2.0f);
                 const float y = (-a * x - c) / b;
-                if (is_out_of_bounds(x, y)) {
+                if (map_.is_out_of_bounds(x, y)) {
                     break;
                 }
 
@@ -202,7 +202,7 @@ private:
                 const float y =
                     start_y + dir_y * (i * CELL_SIZE - WALL_WIDTH / 2.0f);
                 const float x = (-b * y - c) / a;
-                if (is_out_of_bounds(x, y)) {
+                if (map_.is_out_of_bounds(x, y)) {
                     break;
                 }
 

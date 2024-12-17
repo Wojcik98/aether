@@ -20,6 +20,8 @@ public:
 
     CellWalls get_cell_walls(int32_t x, int32_t y) const;
 
+    bool is_out_of_bounds(float x, float y) const;
+
 private:
     // The walls are stored in the following way:
     // horizontal_walls_[x][y] is the wall below cell (x, -y)

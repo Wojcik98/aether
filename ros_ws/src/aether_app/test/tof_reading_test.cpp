@@ -19,6 +19,11 @@ public:
         // Always walls on the sides
         return {0.0f, 1.0f, 0.0f, 1.0f};
     }
+
+    bool is_out_of_bounds(float x, float y) const {
+        // Only lower bound is checked
+        return x < 0.0f || y > 0.0f;
+    }
 };
 
 class TofReadingTest : public ::testing::Test {
