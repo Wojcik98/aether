@@ -9,20 +9,20 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-# uncomment the following section in order to fill in
-# further dependencies manually.
-# find_package(<dependency> REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(visualization_msgs REQUIRED)
 
 add_subdirectory(../../../aether aether)
 
-add_executable(aether_test src/aether_test.cpp)
-target_include_directories(aether_test PUBLIC
+add_executable(map_visualizer src/map_visualizer.cpp)
+target_include_directories(map_visualizer PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include/${PROJECT_NAME}>)
-target_compile_features(aether_test PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
-target_link_libraries(aether_test aether)
+target_compile_features(map_visualizer PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+target_link_libraries(map_visualizer aether)
+ament_target_dependencies(map_visualizer rclcpp visualization_msgs)
 
-install(TARGETS aether_test
+install(TARGETS map_visualizer
   DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)

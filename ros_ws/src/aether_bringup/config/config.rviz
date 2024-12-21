@@ -67,6 +67,8 @@ Visualization Manager:
           Value: true
         left_rear_wheel:
           Value: true
+        map:
+          Value: true
         odom:
           Value: true
         right_front_wheel:
@@ -105,43 +107,43 @@ Visualization Manager:
       Show Axes: true
       Show Names: false
       Tree:
-        base_link:
-          chassis_link:
-            {}
-          imu_link:
-            {}
-          left_front_wheel:
-            {}
-          left_motor_link:
-            {}
-          left_rear_wheel:
-            {}
-          right_front_wheel:
-            {}
-          right_motor_link:
-            {}
-          right_rear_wheel:
-            {}
-          tof_left_diag_link:
-            tof_left_diag_optical_frame:
-              {}
-          tof_left_front_link:
-            tof_left_front_optical_frame:
-              {}
-          tof_left_side_link:
-            tof_left_side_optical_frame:
-              {}
-          tof_right_diag_link:
-            tof_right_diag_optical_frame:
-              {}
-          tof_right_front_link:
-            tof_right_front_optical_frame:
-              {}
-          tof_right_side_link:
-            tof_right_side_optical_frame:
-              {}
-        odom:
-          {}
+        map:
+          odom:
+            base_link:
+              chassis_link:
+                {}
+              imu_link:
+                {}
+              left_front_wheel:
+                {}
+              left_motor_link:
+                {}
+              left_rear_wheel:
+                {}
+              right_front_wheel:
+                {}
+              right_motor_link:
+                {}
+              right_rear_wheel:
+                {}
+              tof_left_diag_link:
+                tof_left_diag_optical_frame:
+                  {}
+              tof_left_front_link:
+                tof_left_front_optical_frame:
+                  {}
+              tof_left_side_link:
+                tof_left_side_optical_frame:
+                  {}
+              tof_right_diag_link:
+                tof_right_diag_optical_frame:
+                  {}
+              tof_right_front_link:
+                tof_right_front_optical_frame:
+                  {}
+              tof_right_side_link:
+                tof_right_side_optical_frame:
+                  {}
       Update Interval: 0
       Value: true
     - Alpha: 1
@@ -356,6 +358,18 @@ Visualization Manager:
           Value: true
       Enabled: true
       Name: ToF sensors
+    - Class: rviz_default_plugins/MarkerArray
+      Enabled: true
+      Name: Maze visualization
+      Namespaces:
+        maze: true
+      Topic:
+        Depth: 5
+        Durability Policy: Transient Local
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /maze_markers
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -402,7 +416,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 0.46550309658050537
+      Distance: 1.1525685787200928
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1

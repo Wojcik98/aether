@@ -74,6 +74,31 @@ def generate_launch_description():
         output="screen",
     )
 
+    map_to_odom = Node(
+        package="tf2_ros",
+        executable="static_transform_publisher",
+        arguments=[
+            f"{robot_config["starting_pose"][0]}",
+            f"{robot_config["starting_pose"][1]}",
+            "0",
+            "0",
+            "0",
+            f"{robot_config["starting_pose"][2]}",
+            "map",
+            "odom",
+        ],
+        output="screen",
+    )
+
+    map_visualizer = Node(
+        package="aether_app",
+        executable="map_visualizer",
+        output="screen",
+        parameters=[
+            {"map_path": maze_config_path},
+        ],
+    )
+
     # Takes the description and joint angles as inputs and publishes the 3D poses of the robot links
     robot_state_publisher = Node(
         package="robot_state_publisher",
@@ -143,6 +168,8 @@ def generate_launch_description():
             gz_sim,
             spawn,
             bridge,
+            map_to_odom,
+            map_visualizer,
             robot_state_publisher,
             rviz,
             lidar_to_range,
