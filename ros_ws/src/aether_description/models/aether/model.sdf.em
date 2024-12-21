@@ -171,6 +171,8 @@ empy.include(template_path("motor.sdf.em"), {
             <wheel_separation>@(config["wheel_base"])</wheel_separation>
             <wheel_radius>@(wheel_radius)</wheel_radius>
             <odom_publish_frequency>@(config["freq_imu_enc"])</odom_publish_frequency>
+            <frame_id>odom</frame_id>
+            <child_frame_id>base_link</child_frame_id>
         </plugin>
     </model>
 </sdf>
