@@ -6,6 +6,9 @@ from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.actions import EmitEvent, RegisterEventHandler
+from launch.event_handlers import OnProcessExit
+from launch.events import Shutdown
 
 from launch_ros.actions import Node
 
@@ -87,6 +90,9 @@ def generate_launch_description():
             "map",
             "odom",
         ],
+        parameters=[
+            {"use_sim_time": True},
+        ],
         output="screen",
     )
 
@@ -96,6 +102,27 @@ def generate_launch_description():
         output="screen",
         parameters=[
             {"map_path": maze_config_path},
+            {"use_sim_time": True},
+        ],
+    )
+
+    mapped_localization = Node(
+        package="aether_app",
+        executable="mapped_localization_node",
+        output="screen",
+        parameters=[
+            {"map_path": maze_config_path},
+            {"use_sim_time": True},
+        ],
+        remappings=[
+            ("odom", "/aether/odom"),
+            ("imu", "/aether/imu"),
+            ("tof_right_side", "/aether/tof_right_side/range"),
+            ("tof_right_diag", "/aether/tof_right_diag/range"),
+            ("tof_right_front", "/aether/tof_right_front/range"),
+            ("tof_left_front", "/aether/tof_left_front/range"),
+            ("tof_left_diag", "/aether/tof_left_diag/range"),
+            ("tof_left_side", "/aether/tof_left_side/range"),
         ],
     )
 
@@ -170,8 +197,17 @@ def generate_launch_description():
             bridge,
             map_to_odom,
             map_visualizer,
+            mapped_localization,
             robot_state_publisher,
             rviz,
             lidar_to_range,
+            RegisterEventHandler(
+                OnProcessExit(
+                    target_action=mapped_localization,
+                    on_exit=EmitEvent(
+                        event=Shutdown(reason="mapped_localization exited")
+                    ),
+                )
+            ),
         ]
     )

@@ -1,7 +1,9 @@
 #include "aether/map_in_progress.hpp"
 
 CellWalls MapInProgress::get_cell_walls(int32_t x, int32_t y) const {
-    y = -y; // indexing with positive y values
+    // bottom left corner is (0, -1) (maze goes to the negative y direction)
+    // we need to negate the y coordinate and offset to index arrays
+    y = -y - 1;
     return {
         horizontal_walls_[x + 1][y], // north
         vertical_walls_[x][y],       // west

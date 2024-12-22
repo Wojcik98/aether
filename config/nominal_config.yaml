@@ -5,7 +5,7 @@ maze_size: [10, 10]
 freq_imu_enc: 200
 freq_tofs: 100
 
-num_particles: 10
+num_particles: 30
 num_eff_particles_threshold: 5
 
 chassis_size: [0.08, 0.08, 0.002]

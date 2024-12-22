@@ -66,6 +66,9 @@ public:
     }
 
     CellWalls get_cell_walls(int32_t x, int32_t y) const {
+        // bottom left corner is (0, -1) (maze goes to the negative y direction)
+        // we need to negate the y coordinate and offset to index arrays
+        y = -y - 1;
         return {
             horizontal_walls_[x + 1][y], // north
             vertical_walls_[x][y],       // west
@@ -75,8 +78,9 @@ public:
     }
 
     bool is_out_of_bounds(float x, float y) const {
-        return x < 0.0f || x > height_ * CELL_SIZE || y > 0.0f ||
-               y < -width_ * CELL_SIZE;
+        const float top_height = height_ * CELL_SIZE;
+        const float top_width = -(width_ * CELL_SIZE);
+        return x < 0.0f || x > top_height || y > 0.0f || y < top_width;
     }
 
     std::size_t get_height() const { return height_; }

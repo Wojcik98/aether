@@ -11,6 +11,11 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(visualization_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(nav_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(message_filters REQUIRED)
+find_package(tf2_ros REQUIRED)
 
 add_subdirectory(../../../aether aether)
 
@@ -18,11 +23,20 @@ add_executable(map_visualizer src/map_visualizer.cpp)
 target_include_directories(map_visualizer PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include/${PROJECT_NAME}>)
-target_compile_features(map_visualizer PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+target_compile_features(map_visualizer PUBLIC c_std_99 cxx_std_17)
 target_link_libraries(map_visualizer aether)
 ament_target_dependencies(map_visualizer rclcpp visualization_msgs)
 
-install(TARGETS map_visualizer
+add_executable(mapped_localization_node src/mapped_localization_node.cpp)
+target_include_directories(mapped_localization_node PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include/${PROJECT_NAME}>)
+target_compile_features(mapped_localization_node PUBLIC c_std_99 cxx_std_17)
+target_link_libraries(mapped_localization_node aether)
+ament_target_dependencies(mapped_localization_node
+  rclcpp message_filters nav_msgs sensor_msgs tf2_ros)
+
+install(TARGETS map_visualizer mapped_localization_node
   DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)

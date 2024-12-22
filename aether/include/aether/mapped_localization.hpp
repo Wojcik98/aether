@@ -105,9 +105,9 @@ private:
 
     void motion_model(const EncoderData &encoder_data,
                       const ImuData &imu_data) {
-        constexpr float MODEL_NOISE_X = 0.001f;
-        constexpr float MODEL_NOISE_Y = 0.001f;
-        constexpr float MODEL_NOISE_YAW = 0.01f;
+        constexpr float MODEL_NOISE_X = 0.01f;
+        constexpr float MODEL_NOISE_Y = 0.005f;
+        constexpr float MODEL_NOISE_YAW = 0.05f;
         constexpr float dt = DT_IMU_ENC;
         // TODO: merge encoder and imu in omega?
         float omega = imu_data.om_z;
@@ -132,6 +132,7 @@ private:
 
     float particle_probability(const Particle &particle,
                                const TofsReadings &tofs_data) {
+        constexpr float MIN_PROB = 0.01f;
         float sum = 0.0f;
 #pragma unroll
         for (size_t i = 0; i < NUM_TOFS; ++i) {
@@ -149,7 +150,7 @@ private:
             }
         }
 
-        return expf(-sum / 2.0f);
+        return std::max(MIN_PROB, expf(-sum / 2.0f));
     }
 
     float predict_tof(const Particle &particle, size_t tof_idx) const {
@@ -180,7 +181,7 @@ private:
 
         // first, sweep in x direction
         if (abs(b) > ZERO_THRESH) {
-            for (uint32_t i = 0; i < TOF_RANGE_CELLS; ++i) {
+            for (uint32_t i = 0; i <= TOF_RANGE_CELLS; ++i) {
                 const float x =
                     start_x + dir_x * (i * CELL_SIZE - WALL_WIDTH / 2.0f);
                 const float y = (-a * x - c) / b;
@@ -198,7 +199,7 @@ private:
 
         // then, sweep in y direction
         if (abs(a) > ZERO_THRESH) {
-            for (uint32_t i = 0; i < TOF_RANGE_CELLS; ++i) {
+            for (uint32_t i = 0; i <= TOF_RANGE_CELLS; ++i) {
                 const float y =
                     start_y + dir_y * (i * CELL_SIZE - WALL_WIDTH / 2.0f);
                 const float x = (-b * y - c) / a;
