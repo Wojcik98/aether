@@ -41,6 +41,10 @@ void blink() {
     HAL_Delay(100);
 }
 
+volatile uint32_t time_ms = 0;
+volatile bool trigger_imu_enc = false;
+volatile bool trigger_tofs = false;
+
 int main() {
     uint32_t button_msk = (1U << Buttons_GetCount()) - 1;
     SystemInit();
@@ -59,25 +63,48 @@ int main() {
     tof_api.start_ranging();
 
     while (true) {
-        uint8_t is_data_ready = 0;
-        tof_api.check_for_data_ready(&is_data_ready);
+        // if executed one after another, maximum number of particles is 50
+        // if there's more, then tofs won't finish before the next imu_enc
+        if (trigger_imu_enc) {
+            LED_Off(0);
+            trigger_imu_enc = false;
+            ImuData imu_data;
+            EncoderData encoder_data;
+            localization.imu_enc_update(0, imu_data, encoder_data);
 
-        if (is_data_ready) {
-            VL53L4CD_ResultsData_t data;
-            tof_api.get_result(&data);
-            tof_api.clear_interrupt();
-
-            if (data.distance_mm < 200 && data.distance_mm > 5) {
+            if (trigger_tofs) {
+                trigger_tofs = false;
+                float dist = 0.1f;
+                float std = 0.1f;
+                TofsReadings tofs_data = {
+                    {dist, std}, {dist, std}, {dist, std},
+                    {dist, std}, {dist, std}, {dist, std},
+                };
+                localization.tofs_update(0, tofs_data);
                 LED_On(0);
-            } else {
-                LED_Off(0);
             }
         }
     }
 }
 
 extern "C" { // Interrupts handlers need to be "visible" in C
-void SysTick_Handler(void) { HAL_IncTick(); }
+void SysTick_Handler(void) {
+    HAL_IncTick();
+    time_ms++;
+
+    // for 200 particles, imu enc update barely finishes in 1 ms
+    // for 20 particles, tofss update barely finishes in 1 ms
+
+    // 100 Hz
+    if (time_ms % 10 == 0) {
+        trigger_tofs = true;
+    }
+
+    // 200 Hz
+    if (time_ms % 5 == 0) {
+        trigger_imu_enc = true;
+    }
+}
 }
 
 void HAL_IncTick(void) { uwTick += 1; }
@@ -168,6 +195,6 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef *hi2c) {
 
 void error_handler() {
     while (true) {
-        // __NOP(); // Error
+        asm volatile("");
     }
 }
