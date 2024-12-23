@@ -5,10 +5,10 @@
 #include <cmath>
 #include <cstdint>
 #include <limits>
-#include <random>
 
 #include "aether/localization_interface.hpp"
 #include "aether/map_confident.hpp"
+#include "aether/random.hpp"
 #include "aether/robot_config.hpp"
 #include "aether/types.hpp"
 
@@ -78,7 +78,8 @@ public:
         }
     }
 
-    void set_random_seed(uint32_t seed) { gen.seed(seed); }
+    // void set_random_seed(uint32_t seed) { gen.seed(seed); }
+    void set_random_seed(uint32_t seed) { (void)seed; }
 
 private:
     struct Particle {
@@ -86,14 +87,9 @@ private:
         float weight;
     };
 
-    std::random_device rd{};
-    std::mt19937 gen{rd()};
-    std::normal_distribution<float> noise_dist{0.0f, 1.0f};
-    std::uniform_real_distribution<float> uniform_dist{0.0f, 1.0f};
-    float noise(float std) { return noise_dist(gen) * std; }
-    float rand_uniform(float a, float b) {
-        return uniform_dist(gen) * (b - a) + a;
-    }
+    RandomGenerator rand_gen{42};
+    float noise(float std) { return rand_gen.normal(0.0f, std); }
+    float rand_uniform(float a, float b) { return rand_gen.uniform(a, b); }
 
     const MapConfident<MapImpl> &map_;
 
@@ -160,7 +156,7 @@ private:
         auto tof_g = particle.state * tof;
         float yaw = tof_g.yaw;
         if (yaw < 0.0f) {
-            yaw += 2.0f * M_PIf;
+            yaw += 2.0f * PI_F;
         }
 
         // line equation: ax + by + c = 0
@@ -168,8 +164,8 @@ private:
         float b = -cosf(yaw);
         float c = -a * tof_g.x - b * tof_g.y;
 
-        float dir_x = (M_PI_2f <= yaw && yaw < 3 * M_PI_2f) ? -1.0f : 1.0f;
-        float dir_y = (yaw >= M_PIf) ? -1.0f : 1.0f;
+        float dir_x = (PI_2_F <= yaw && yaw < 3 * PI_2_F) ? -1.0f : 1.0f;
+        float dir_y = (yaw >= PI_F) ? -1.0f : 1.0f;
         float closest_dist = std::numeric_limits<float>::infinity();
 
         auto [x_cell, y_cell] =

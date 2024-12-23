@@ -16,6 +16,7 @@ project:
             - -std=gnu11
             - -Wno-missing-prototypes
           C-CPP:
+            - -ffp-mode=fast
             - -funsigned-char
             - -fshort-enums
             - -fshort-wchar
@@ -50,6 +51,7 @@ project:
             - --strict
             - --summary_stderr
             - --info summarysizes
+            - --verbose
   groups:
     - group: Source Files
       files:
@@ -63,16 +65,17 @@ project:
     # with the same settings, than to try it with cmake.
     - group: Aether library
       files:
-        - file: $SolutionDir()$/../aether/src/mapped_localization.cpp
-        - file: $SolutionDir()$/../aether/src/map_confident.cpp
+        - file: $SolutionDir()$/../aether/src/map_in_progress.cpp
+        - file: $SolutionDir()$/../aether/include/aether/localization_interface.hpp
+        - file: $SolutionDir()$/../aether/include/aether/map_confident.hpp
+        - file: $SolutionDir()$/../aether/include/aether/map_in_progress.hpp
+        - file: $SolutionDir()$/../aether/include/aether/map_interface.hpp
+        - file: $SolutionDir()$/../aether/include/aether/mapped_localization.hpp
+        - file: $SolutionDir()$/../aether/include/aether/random.hpp
         - file: $SolutionDir()$/../aether/include/aether/robot_config.hpp
+        - file: $SolutionDir()$/../aether/include/aether/types.hpp
   add-path:
-    [
-      include,
-      vl53l4cd_driver/include,
-      $SolutionDir()$/../third_party/eigen,
-      $SolutionDir()$/../aether/include,
-    ]
+    [include, vl53l4cd_driver/include, $SolutionDir()$/../aether/include]
 
   # List components to use for your application.
   # A software component is a re-usable unit that may be configurable.

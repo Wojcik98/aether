@@ -6,8 +6,6 @@ tofs_poses = config["tofs_poses"]
 
 #include <cstdint>
 
-#include "Eigen/Core"
-
 #include "aether/types.hpp"
 
 static constexpr size_t NUM_TOFS = 6;
