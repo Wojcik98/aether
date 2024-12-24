@@ -12,6 +12,11 @@
 #include "aether/robot_config.hpp"
 #include "aether/types.hpp"
 
+struct Particle {
+    FullState state;
+    float weight;
+};
+
 // Localization class that uses finished map to localize the robot.
 // Uses particle filter algorithm.
 // Assumes that the robot is always in the map.
@@ -42,6 +47,8 @@ public:
 
         return pose;
     }
+
+    std::array<Particle, NUM_PARTICLES> get_particles() { return particles_; }
 
     bool collision_detected() { return collision_detected_; }
 
@@ -82,11 +89,6 @@ public:
     void set_random_seed(uint32_t seed) { (void)seed; }
 
 private:
-    struct Particle {
-        FullState state;
-        float weight;
-    };
-
     RandomGenerator rand_gen{42};
     float noise(float std) { return rand_gen.normal(0.0f, std); }
     float rand_uniform(float a, float b) { return rand_gen.uniform(a, b); }
@@ -101,9 +103,9 @@ private:
 
     void motion_model(const EncoderData &encoder_data,
                       const ImuData &imu_data) {
-        constexpr float MODEL_NOISE_X = 0.01f;
-        constexpr float MODEL_NOISE_Y = 0.005f;
-        constexpr float MODEL_NOISE_YAW = 0.05f;
+        constexpr float MODEL_NOISE_X = 0.1f;
+        constexpr float MODEL_NOISE_Y = 0.05f;
+        constexpr float MODEL_NOISE_YAW = 0.5f;
         constexpr float dt = DT_IMU_ENC;
         // TODO: merge encoder and imu in omega?
         float omega = imu_data.om_z;

@@ -34,7 +34,7 @@ target_include_directories(mapped_localization_node PUBLIC
 target_compile_features(mapped_localization_node PUBLIC c_std_99 cxx_std_17)
 target_link_libraries(mapped_localization_node aether)
 ament_target_dependencies(mapped_localization_node
-  rclcpp message_filters nav_msgs sensor_msgs tf2_ros)
+  rclcpp message_filters nav_msgs sensor_msgs tf2_ros geometry_msgs visualization_msgs)
 
 install(TARGETS map_visualizer mapped_localization_node
   DESTINATION lib/${PROJECT_NAME})

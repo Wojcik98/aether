@@ -5,14 +5,18 @@
 #include <memory>
 #include <string>
 
+#include <geometry_msgs/msg/quaternion.hpp>
 #include <geometry_msgs/msg/transform_stamped.hpp>
+#include <geometry_msgs/msg/vector3.hpp>
 #include <message_filters/subscriber.h>
 #include <message_filters/time_synchronizer.h>
 #include <nav_msgs/msg/odometry.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/imu.hpp>
 #include <sensor_msgs/msg/range.hpp>
+#include <std_msgs/msg/color_rgba.hpp>
 #include <tf2_ros/transform_broadcaster.h>
+#include <visualization_msgs/msg/marker.hpp>
 
 #include <aether/map_interface.hpp>
 #include <aether/mapped_localization.hpp>
@@ -73,8 +77,9 @@ public:
         // odometry_pub_ = this->create_publisher<Odometry>("odom_out", 10);
         tf_broadcaster_ =
             std::make_unique<tf2_ros::TransformBroadcaster>(*this);
+        particles_pub_ = this->create_publisher<Marker>("particles", 10);
         timer_ = this->create_wall_timer(
-            100ms, std::bind(&MappedLocalizationNode::timer_callback, this));
+            50ms, std::bind(&MappedLocalizationNode::timer_callback, this));
     }
 
 private:
@@ -86,6 +91,7 @@ private:
     using Imu = sensor_msgs::msg::Imu;
     using Range = sensor_msgs::msg::Range;
     using Odometry = nav_msgs::msg::Odometry;
+    using Marker = visualization_msgs::msg::Marker;
 
     using ImuEncSync = message_filters::TimeSynchronizer<Imu, Odometry>;
     using TofsSync = message_filters::TimeSynchronizer<Range, Range, Range,
@@ -98,8 +104,8 @@ private:
     std::shared_ptr<ImuEncSync> imu_enc_sync_;
     std::shared_ptr<TofsSync> tofs_sync_;
 
-    // rclcpp::Publisher<Odometry>::SharedPtr odometry_pub_;
     std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
+    std::shared_ptr<rclcpp::Publisher<Marker>> particles_pub_;
     rclcpp::TimerBase::SharedPtr timer_;
 
     void imu_enc_callback(const Imu::ConstSharedPtr &imu_msg,
@@ -155,8 +161,8 @@ private:
             RCLCPP_ERROR(get_logger(), "NaN pose");
             throw std::runtime_error("NaN pose");
         }
-        RCLCPP_INFO(get_logger(), "Pose: (%f, %f, %f)", pose.x, pose.y,
-                    pose.yaw);
+        RCLCPP_DEBUG(get_logger(), "Pose: (%f, %f, %f)", pose.x, pose.y,
+                     pose.yaw);
 
         geometry_msgs::msg::TransformStamped transform;
         transform.header.stamp = this->now();
@@ -171,18 +177,27 @@ private:
         transform.transform.rotation.w = cos(pose.yaw / 2.0);
         tf_broadcaster_->sendTransform(transform);
 
-        // Odometry odom_msg;
-        // odom_msg.header.stamp = this->now();
-        // odom_msg.header.frame_id = "map";
-        // odom_msg.child_frame_id = "base_link";
-        // odom_msg.pose.pose.position.x = pose.x;
-        // odom_msg.pose.pose.position.y = pose.y;
-        // odom_msg.pose.pose.position.z = 0.0;
-        // odom_msg.pose.pose.orientation.x = 0.0;
-        // odom_msg.pose.pose.orientation.y = 0.0;
-        // odom_msg.pose.pose.orientation.z = sin(pose.yaw / 2.0);
-        // odom_msg.pose.pose.orientation.w = cos(pose.yaw / 2.0);
-        // odometry_pub_->publish(odom_msg);
+        auto particles = localization_->get_particles();
+        Marker msg;
+        msg.header.frame_id = "map";
+        msg.header.stamp = this->now();
+        msg.ns = "particles";
+        msg.id = 0;
+        msg.type = Marker::SPHERE_LIST;
+        msg.action = Marker::ADD;
+        msg.pose.orientation.w = 1.0;
+        msg.scale.x = 0.01;
+        msg.scale.y = 0.01;
+        msg.color.r = 1.0;
+        msg.color.a = 1.0;
+        for (const auto &particle : particles) {
+            geometry_msgs::msg::Point p;
+            p.x = particle.state.x;
+            p.y = particle.state.y;
+            p.z = 0.0;
+            msg.points.push_back(p);
+        }
+        particles_pub_->publish(msg);
     }
 };
 

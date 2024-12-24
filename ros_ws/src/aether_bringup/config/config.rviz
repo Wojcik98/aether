@@ -161,118 +161,20 @@ Visualization Manager:
         History Policy: Keep Last
         Reliability Policy: Reliable
         Value: /robot_description
-      Enabled: true
+      Enabled: false
       Links:
         All Links Enabled: true
         Expand Joint Details: false
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
-        base_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        chassis_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        imu_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        left_front_wheel:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        left_motor_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        left_rear_wheel:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        right_front_wheel:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        right_motor_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        right_rear_wheel:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tof_left_diag_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tof_left_diag_optical_frame:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        tof_left_front_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tof_left_front_optical_frame:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        tof_left_side_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tof_left_side_optical_frame:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        tof_right_diag_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tof_right_diag_optical_frame:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        tof_right_front_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tof_right_front_optical_frame:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        tof_right_side_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tof_right_side_optical_frame:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
       Mass Properties:
         Inertia: false
         Mass: false
       Name: RobotModel
       TF Prefix: ""
       Update Interval: 0
-      Value: true
+      Value: false
       Visual Enabled: true
     - Class: rviz_common/Group
       Displays:
@@ -374,6 +276,19 @@ Visualization Manager:
         Reliability Policy: Reliable
         Value: /maze_markers
       Value: true
+    - Class: rviz_default_plugins/Marker
+      Enabled: true
+      Name: Marker
+      Namespaces:
+        particles: true
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /particles
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -420,7 +335,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 1.3842191696166992
+      Distance: 1.2190171480178833
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -438,7 +353,7 @@ Visualization Manager:
       Pitch: 1.499794602394104
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 3.1235365867614746
+      Yaw: 3.1285367012023926
     Saved: ~
 Window Geometry:
   Displays:
