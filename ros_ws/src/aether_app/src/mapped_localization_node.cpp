@@ -121,7 +121,7 @@ private:
             (odom_vel_lin + odom_vel_ang * WHEEL_BASE / 2.0f) / WHEEL_RADIUS;
         EncoderData encoder_data(om_l, om_r);
 
-        localization_->imu_enc_update(0, imu_data, encoder_data);
+        localization_->imu_enc_update(imu_data, encoder_data);
     }
 
     void tofs_callback(const Range::ConstSharedPtr &tof_right_side_msg,
@@ -143,7 +143,7 @@ private:
         RCLCPP_DEBUG(get_logger(), "TOF readings: %f, %f, %f, %f, %f, %f",
                      tofs_data[0].dist, tofs_data[1].dist, tofs_data[2].dist,
                      tofs_data[3].dist, tofs_data[4].dist, tofs_data[5].dist);
-        localization_->tofs_update(0, tofs_data);
+        localization_->tofs_update(tofs_data);
         auto pose = localization_->get_latest_pose();
         if (std::isnan(pose.x) || std::isnan(pose.y) || std::isnan(pose.yaw)) {
             RCLCPP_ERROR(get_logger(), "NaN pose");

@@ -61,9 +61,9 @@ TEST_F(TofReadingTest, IdealDriveForwardTest) {
 
     // Single step
     for (uint32_t i = 0; i < IMU_TO_TOF_RATIO; ++i) {
-        localization.imu_enc_update(0, empty_imu, encoder_data);
+        localization.imu_enc_update(empty_imu, encoder_data);
     }
-    localization.tofs_update(0, tofs_data);
+    localization.tofs_update(tofs_data);
     auto pose = localization.get_latest_pose();
 
     EXPECT_NEAR(pose.x, STARTING_X + dx_tof_step, 0.001f);
@@ -71,13 +71,13 @@ TEST_F(TofReadingTest, IdealDriveForwardTest) {
     EXPECT_NEAR(pose.yaw, STARTING_YAW, 0.001f);
 
     // Drive for a long time
-    localization.reset(0);
+    localization.reset();
     const uint32_t num_steps = 100'000;
     for (uint32_t i = 0; i < num_steps; ++i) {
         for (uint32_t j = 0; j < IMU_TO_TOF_RATIO; ++j) {
-            localization.imu_enc_update(0, empty_imu, encoder_data);
+            localization.imu_enc_update(empty_imu, encoder_data);
         }
-        localization.tofs_update(0, tofs_data);
+        localization.tofs_update(tofs_data);
     }
     pose = localization.get_latest_pose();
 

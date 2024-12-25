@@ -40,7 +40,7 @@ TEST_F(MotionModelTest, InitTest) {
 }
 
 TEST_F(MotionModelTest, ResetTest) {
-    localization.reset(0);
+    localization.reset();
     auto pose = localization.get_latest_pose();
     EXPECT_FLOAT_EQ(pose.x, STARTING_X);
     EXPECT_FLOAT_EQ(pose.y, STARTING_Y);
@@ -50,14 +50,14 @@ TEST_F(MotionModelTest, ResetTest) {
 TEST_F(MotionModelTest, CollisionTest) {
     ImuData imu_data{0.0f, -0.4f};
     EncoderData encoder_data;
-    localization.imu_enc_update(0, imu_data, encoder_data);
+    localization.imu_enc_update(imu_data, encoder_data);
     EXPECT_TRUE(localization.collision_detected());
 }
 
 TEST_F(MotionModelTest, NoCollisionTest) {
     ImuData imu_data{0.0f, -0.6f};
     EncoderData encoder_data;
-    localization.imu_enc_update(0, imu_data, encoder_data);
+    localization.imu_enc_update(imu_data, encoder_data);
     EXPECT_FALSE(localization.collision_detected());
 }
 
@@ -67,7 +67,7 @@ TEST_F(MotionModelTest, DriveForwardTest) {
     EncoderData encoder_data{om_wheel, om_wheel};
 
     // Single step
-    localization.imu_enc_update(0, imu_data, encoder_data);
+    localization.imu_enc_update(imu_data, encoder_data);
     auto pose = localization.get_latest_pose();
 
     float dx = om_wheel * DT_IMU_ENC * WHEEL_RADIUS;
@@ -76,10 +76,10 @@ TEST_F(MotionModelTest, DriveForwardTest) {
     EXPECT_NEAR(pose.yaw, STARTING_YAW, 0.001f);
 
     // Drive for a while
-    localization.reset(0);
+    localization.reset();
     const int num_steps = 500;
     for (int i = 0; i < num_steps; ++i) {
-        localization.imu_enc_update(0, imu_data, encoder_data);
+        localization.imu_enc_update(imu_data, encoder_data);
     }
     pose = localization.get_latest_pose();
 
@@ -97,7 +97,7 @@ TEST_F(MotionModelTest, TurnTest) {
     EncoderData encoder_data{om_wheel, -om_wheel};
 
     // Single step
-    localization.imu_enc_update(0, imu_data, encoder_data);
+    localization.imu_enc_update(imu_data, encoder_data);
     auto pose = localization.get_latest_pose();
 
     float dtheta = om_robot * DT_IMU_ENC;
@@ -106,10 +106,10 @@ TEST_F(MotionModelTest, TurnTest) {
     EXPECT_NEAR(pose.yaw, STARTING_YAW + dtheta, 0.001f);
 
     // Turn for a while
-    localization.reset(0);
+    localization.reset();
     const int num_steps = 500;
     for (int i = 0; i < num_steps; ++i) {
-        localization.imu_enc_update(0, imu_data, encoder_data);
+        localization.imu_enc_update(imu_data, encoder_data);
     }
     pose = localization.get_latest_pose();
 
@@ -136,7 +136,7 @@ TEST_F(MotionModelTest, DriveAndTurnTest) {
     EncoderData encoder_data{om_l, om_r};
 
     // Single step
-    localization.imu_enc_update(0, imu_data, encoder_data);
+    localization.imu_enc_update(imu_data, encoder_data);
     auto pose = localization.get_latest_pose();
 
     float expected_x =
@@ -155,13 +155,13 @@ TEST_F(MotionModelTest, DriveAndTurnTest) {
     EXPECT_NEAR(pose.yaw, expected_yaw, 0.001f);
 
     // Drive for a while
-    localization.reset(0);
+    localization.reset();
     const int num_steps = 500;
     const float dt = DT_IMU_ENC;
     const float num_periods = num_steps * dt / circle_period;
 
     for (int i = 0; i < num_steps; ++i) {
-        localization.imu_enc_update(0, imu_data, encoder_data);
+        localization.imu_enc_update(imu_data, encoder_data);
     }
     pose = localization.get_latest_pose();
 

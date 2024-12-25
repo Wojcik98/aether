@@ -30,8 +30,7 @@ public:
         reset_particles();
     }
 
-    void reset(Time time) {
-        last_predict_ = time;
+    void reset() {
         collision_detected_ = false;
         reset_particles();
     }
@@ -52,7 +51,7 @@ public:
 
     bool collision_detected() { return collision_detected_; }
 
-    void imu_enc_update(Time time, const ImuData &imu_data,
+    void imu_enc_update(const ImuData &imu_data,
                         const EncoderData &encoder_data) {
         // TODO: save data to buffer and process it from another thread.
         // When we run updates from ToF, they can take a while and we don't want
@@ -62,11 +61,9 @@ public:
         }
 
         motion_model(encoder_data, imu_data);
-        last_predict_ = time;
     }
 
-    void tofs_update(Time time, const TofsReadings &tofs_data) {
-        (void)time;
+    void tofs_update(const TofsReadings &tofs_data) {
         float sum_weights = 0.0f;
         float sum_weights_sq = 0.0f;
         for (auto &particle : particles_) {
@@ -83,6 +80,10 @@ public:
         if (num_effective_particles < NUM_EFF_PARTICLES_THRESHOLD) {
             resample_particles();
         }
+
+        if (rand_gen.rand_left() < 0.1f) {
+            rand_gen.regenerate();
+        }
     }
 
     // void set_random_seed(uint32_t seed) { gen.seed(seed); }
@@ -96,8 +97,6 @@ private:
     const MapConfident<MapImpl> &map_;
 
     std::array<Particle, NUM_PARTICLES> particles_;
-
-    Time last_predict_;
 
     bool collision_detected_;
 
