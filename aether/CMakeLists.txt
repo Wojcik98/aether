@@ -21,6 +21,7 @@ add_custom_command(
 # Create the library target
 add_library(${PROJECT_NAME} STATIC
     src/map_in_progress.cpp
+    src/simple_planner.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/aether/robot_config.hpp
 )
 

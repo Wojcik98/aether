@@ -9,6 +9,8 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.actions import EmitEvent, RegisterEventHandler
 from launch.event_handlers import OnProcessExit
 from launch.events import Shutdown
+from launch_ros.actions import ComposableNodeContainer
+from launch_ros.descriptions import ComposableNode
 
 from launch_ros.actions import Node
 
@@ -42,6 +44,9 @@ def generate_launch_description():
     world_path = "/tmp/maze.sdf"
     maze_config_path = os.path.join(
         pkg_project_bringup, "config", "mazes", "simple.txt"
+    )
+    path_config_path = os.path.join(
+        pkg_project_bringup, "config", "paths", "simple.txt"
     )
     world_template_path = os.path.join(
         pkg_project_gazebo, "worlds", "maze_from_config.sdf.em"
@@ -106,14 +111,21 @@ def generate_launch_description():
         ],
     )
 
-    mapped_localization = Node(
+    path_visualizer = Node(
         package="aether_app",
-        executable="mapped_localization_node",
+        executable="path_visualizer",
         output="screen",
         parameters=[
-            {"map_path": maze_config_path},
+            {"path_path": path_config_path},
             {"use_sim_time": True},
         ],
+    )
+
+    sensors_sync_component = ComposableNode(
+        package="aether_app",
+        plugin="SensorsSync",
+        name="sensors_sync",
+        namespace="aether",
         remappings=[
             ("odom", "/aether/odom"),
             ("imu", "/aether/imu"),
@@ -124,6 +136,31 @@ def generate_launch_description():
             ("tof_left_diag", "/aether/tof_left_diag/range"),
             ("tof_left_side", "/aether/tof_left_side/range"),
         ],
+        extra_arguments=[{"use_intra_process_comms": True}],
+    )
+
+    mapped_localization_component = ComposableNode(
+        package="aether_app",
+        plugin="MappedLocalizationNode",
+        name="mapped_localization",
+        namespace="aether",
+        parameters=[
+            {"map_path": maze_config_path},
+            {"use_sim_time": True},
+        ],
+        extra_arguments=[{"use_intra_process_comms": True}],
+    )
+
+    mapped_localization_container = ComposableNodeContainer(
+        name="mapped_localization_container",
+        namespace="aether",
+        package="rclcpp_components",
+        executable="component_container",
+        composable_node_descriptions=[
+            sensors_sync_component,
+            mapped_localization_component,
+        ],
+        output="screen",
     )
 
     # Takes the description and joint angles as inputs and publishes the 3D poses of the robot links
@@ -169,6 +206,7 @@ def generate_launch_description():
     )
 
     # Convert LiDAR scans to range measurements
+    # TODO: make composable
     tof_names = [
         "tof_right_side",
         "tof_right_diag",
@@ -197,15 +235,16 @@ def generate_launch_description():
             bridge,
             map_to_odom,
             map_visualizer,
-            mapped_localization,
+            path_visualizer,
+            mapped_localization_container,
             robot_state_publisher,
             rviz,
             lidar_to_range,
             RegisterEventHandler(
                 OnProcessExit(
-                    target_action=mapped_localization,
+                    target_action=mapped_localization_container,
                     on_exit=EmitEvent(
-                        event=Shutdown(reason="mapped_localization exited")
+                        event=Shutdown(reason="mapped_localization_container exited")
                     ),
                 )
             ),

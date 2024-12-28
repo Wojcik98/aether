@@ -1,15 +1,12 @@
 #include <array>
 #include <chrono>
 #include <fstream>
-#include <functional>
 #include <memory>
 #include <string>
 
 #include <geometry_msgs/msg/quaternion.hpp>
 #include <geometry_msgs/msg/transform_stamped.hpp>
 #include <geometry_msgs/msg/vector3.hpp>
-#include <message_filters/subscriber.h>
-#include <message_filters/time_synchronizer.h>
 #include <nav_msgs/msg/odometry.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/imu.hpp>
@@ -17,6 +14,9 @@
 #include <std_msgs/msg/color_rgba.hpp>
 #include <tf2_ros/transform_broadcaster.h>
 #include <visualization_msgs/msg/marker.hpp>
+
+#include <aether_msgs/msg/imu_enc_synced.hpp>
+#include <aether_msgs/msg/tofs_synced.hpp>
 
 #include <aether/map_interface.hpp>
 #include <aether/mapped_localization.hpp>
@@ -26,16 +26,10 @@
 
 using namespace std::chrono_literals;
 
-using std::placeholders::_1;
-using std::placeholders::_2;
-using std::placeholders::_3;
-using std::placeholders::_4;
-using std::placeholders::_5;
-using std::placeholders::_6;
-
 class MappedLocalizationNode : public rclcpp::Node {
 public:
-    MappedLocalizationNode() : Node("mapped_localization_node") {
+    MappedLocalizationNode(const rclcpp::NodeOptions &options)
+        : Node("mapped_localization_node", options) {
         this->declare_parameter("map_path", "");
         map_path_ = this->get_parameter("map_path").as_string();
 
@@ -51,28 +45,14 @@ public:
             *map_confident_);
         RCLCPP_INFO(get_logger(), "Map loaded");
 
-        // TODO: message filters seem to take a long time to compile
-        // I could do synchronization in a separate node and use composition
-        imu_sub_.subscribe(this, "imu");
-        odometry_sub_.subscribe(this, "odom");
-        tof_subs_[0].subscribe(this, "tof_right_side");
-        tof_subs_[1].subscribe(this, "tof_right_diag");
-        tof_subs_[2].subscribe(this, "tof_right_front");
-        tof_subs_[3].subscribe(this, "tof_left_front");
-        tof_subs_[4].subscribe(this, "tof_left_diag");
-        tof_subs_[5].subscribe(this, "tof_left_side");
-
-        imu_enc_sync_ =
-            std::make_shared<ImuEncSync>(imu_sub_, odometry_sub_, 10);
-        imu_enc_sync_->registerCallback(
-            std::bind(&MappedLocalizationNode::imu_enc_callback, this, _1, _2));
-
-        tofs_sync_ = std::make_shared<TofsSync>(tof_subs_[0], tof_subs_[1],
-                                                tof_subs_[2], tof_subs_[3],
-                                                tof_subs_[4], tof_subs_[5], 10);
-        tofs_sync_->registerCallback(
-            std::bind(&MappedLocalizationNode::tofs_callback, this, _1, _2, _3,
-                      _4, _5, _6));
+        imu_enc_sub_ = this->create_subscription<ImuEncSynced>(
+            "imu_enc", 10,
+            std::bind(&MappedLocalizationNode::imu_enc_callback, this,
+                      std::placeholders::_1));
+        tofs_sub_ = this->create_subscription<TofsSynced>(
+            "tofs", 10,
+            std::bind(&MappedLocalizationNode::tofs_callback, this,
+                      std::placeholders::_1));
 
         // odometry_pub_ = this->create_publisher<Odometry>("odom_out", 10);
         tf_broadcaster_ =
@@ -92,28 +72,24 @@ private:
     using Range = sensor_msgs::msg::Range;
     using Odometry = nav_msgs::msg::Odometry;
     using Marker = visualization_msgs::msg::Marker;
+    using ImuEncSynced = aether_msgs::msg::ImuEncSynced;
+    using TofsSynced = aether_msgs::msg::TofsSynced;
 
-    using ImuEncSync = message_filters::TimeSynchronizer<Imu, Odometry>;
-    using TofsSync = message_filters::TimeSynchronizer<Range, Range, Range,
-                                                       Range, Range, Range>;
-
-    message_filters::Subscriber<Imu> imu_sub_;
-    message_filters::Subscriber<Odometry> odometry_sub_;
-    std::array<message_filters::Subscriber<Range>, NUM_TOFS> tof_subs_;
-
-    std::shared_ptr<ImuEncSync> imu_enc_sync_;
-    std::shared_ptr<TofsSync> tofs_sync_;
+    rclcpp::Subscription<ImuEncSynced>::SharedPtr imu_enc_sub_;
+    rclcpp::Subscription<TofsSynced>::SharedPtr tofs_sub_;
 
     std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
     std::shared_ptr<rclcpp::Publisher<Marker>> particles_pub_;
     rclcpp::TimerBase::SharedPtr timer_;
 
-    void imu_enc_callback(const Imu::ConstSharedPtr &imu_msg,
-                          const Odometry::ConstSharedPtr &odometry_msg) {
-        ImuData imu_data(imu_msg->angular_velocity.z);
+    void imu_enc_callback(const ImuEncSynced::ConstSharedPtr &msg) {
+        auto &imu_msg = msg->imu;
+        auto &odometry_msg = msg->enc;
 
-        float odom_vel_lin = odometry_msg->twist.twist.linear.x;
-        float odom_vel_ang = odometry_msg->twist.twist.angular.z;
+        ImuData imu_data(imu_msg.angular_velocity.z);
+
+        float odom_vel_lin = odometry_msg.twist.twist.linear.x;
+        float odom_vel_ang = odometry_msg.twist.twist.angular.z;
         // angular velocities of each wheel
         float om_l =
             (odom_vel_lin - odom_vel_ang * WHEEL_BASE / 2.0f) / WHEEL_RADIUS;
@@ -124,20 +100,15 @@ private:
         localization_->imu_enc_update(imu_data, encoder_data);
     }
 
-    void tofs_callback(const Range::ConstSharedPtr &tof_right_side_msg,
-                       const Range::ConstSharedPtr &tof_right_diag_msg,
-                       const Range::ConstSharedPtr &tof_right_front_msg,
-                       const Range::ConstSharedPtr &tof_left_front_msg,
-                       const Range::ConstSharedPtr &tof_left_diag_msg,
-                       const Range::ConstSharedPtr &tof_left_side_msg) {
+    void tofs_callback(const TofsSynced::ConstSharedPtr &msg) {
         const float std = 0.05f;
         TofsReadings tofs_data = {
-            {tof_infinitize(tof_right_side_msg->range), std},
-            {tof_infinitize(tof_right_diag_msg->range), std},
-            {tof_infinitize(tof_right_front_msg->range), std},
-            {tof_infinitize(tof_left_front_msg->range), std},
-            {tof_infinitize(tof_left_diag_msg->range), std},
-            {tof_infinitize(tof_left_side_msg->range), std},
+            {tof_infinitize(msg->tofs[0].range), std},
+            {tof_infinitize(msg->tofs[1].range), std},
+            {tof_infinitize(msg->tofs[2].range), std},
+            {tof_infinitize(msg->tofs[3].range), std},
+            {tof_infinitize(msg->tofs[4].range), std},
+            {tof_infinitize(msg->tofs[5].range), std},
         };
 
         RCLCPP_DEBUG(get_logger(), "TOF readings: %f, %f, %f, %f, %f, %f",
@@ -201,9 +172,5 @@ private:
     }
 };
 
-int main(int argc, char **argv) {
-    rclcpp::init(argc, argv);
-    rclcpp::spin(std::make_shared<MappedLocalizationNode>());
-    rclcpp::shutdown();
-    return 0;
-}
+#include <rclcpp_components/register_node_macro.hpp>
+RCLCPP_COMPONENTS_REGISTER_NODE(MappedLocalizationNode)

@@ -6,7 +6,40 @@ tofs_poses = config["tofs_poses"]
 
 #include <cstdint>
 
-#include "aether/types.hpp"
+template <typename T> struct TofsData {
+    const T right_side;
+    const T right_diag;
+    const T right_front;
+    const T left_front;
+    const T left_diag;
+    const T left_side;
+
+    const T &operator[](size_t i) const {
+        switch (i) {
+        case 0:
+            return right_side;
+        case 1:
+            return right_diag;
+        case 2:
+            return right_front;
+        case 3:
+            return left_front;
+        case 4:
+            return left_diag;
+        case 5:
+            return left_side;
+        default:
+            return right_side;
+        }
+    }
+};
+
+struct Pose {
+    float x;
+    float y;
+    float yaw;
+};
+using TofsPoses = TofsData<Pose>;
 
 static constexpr size_t NUM_TOFS = 6;
 
@@ -41,11 +74,14 @@ constexpr float STARTING_YAW = @(config["starting_pose"][2]);
 
 constexpr float FREQ_IMU_ENC = @(config["freq_imu_enc"]);
 constexpr float FREQ_TOFS = @(config["freq_tofs"]);
+constexpr float FREQ_CONTROL = @(config["freq_control"]);
 
 constexpr float DT_IMU_ENC = 1.0f / FREQ_IMU_ENC;
 constexpr float DT_TOFS = 1.0f / FREQ_TOFS;
 
 constexpr uint32_t NUM_PARTICLES = @(config["num_particles"]);
 constexpr float NUM_EFF_PARTICLES_THRESHOLD = @(config["num_eff_particles_threshold"]);
+
+constexpr uint32_t MAX_PATH_LENGTH = MAZE_SIZE_X_CELLS * MAZE_SIZE_Y_CELLS;
 
 #endif // _AETHER_INCLUDE_ROBOT_CONFIG_HPP_

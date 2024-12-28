@@ -111,43 +111,28 @@ Visualization Manager:
       Tree:
         map:
           base_link:
-            chassis_link:
-              {}
-            imu_link:
-              {}
-            left_front_wheel:
-              {}
-            left_motor_link:
-              {}
-            left_rear_wheel:
-              {}
-            right_front_wheel:
-              {}
-            right_motor_link:
-              {}
-            right_rear_wheel:
-              {}
+            chassis_link: {}
+            imu_link: {}
+            left_front_wheel: {}
+            left_motor_link: {}
+            left_rear_wheel: {}
+            right_front_wheel: {}
+            right_motor_link: {}
+            right_rear_wheel: {}
             tof_left_diag_link:
-              tof_left_diag_optical_frame:
-                {}
+              tof_left_diag_optical_frame: {}
             tof_left_front_link:
-              tof_left_front_optical_frame:
-                {}
+              tof_left_front_optical_frame: {}
             tof_left_side_link:
-              tof_left_side_optical_frame:
-                {}
+              tof_left_side_optical_frame: {}
             tof_right_diag_link:
-              tof_right_diag_optical_frame:
-                {}
+              tof_right_diag_optical_frame: {}
             tof_right_front_link:
-              tof_right_front_optical_frame:
-                {}
+              tof_right_front_optical_frame: {}
             tof_right_side_link:
-              tof_right_side_optical_frame:
-                {}
+              tof_right_side_optical_frame: {}
           odom:
-            base_link_enc:
-              {}
+            base_link_enc: {}
       Update Interval: 0
       Value: true
     - Alpha: 1
@@ -288,6 +273,34 @@ Visualization Manager:
         History Policy: Keep Last
         Reliability Policy: Reliable
         Value: /particles
+      Value: true
+    - Alpha: 1
+      Buffer Length: 1
+      Class: rviz_default_plugins/Path
+      Color: 25; 255; 0
+      Enabled: true
+      Head Diameter: 0.019999999552965164
+      Head Length: 0.019999999552965164
+      Length: 0.10000000149011612
+      Line Style: Lines
+      Line Width: 0.029999999329447746
+      Name: Path
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Pose Color: 0; 255; 0
+      Pose Style: Arrows
+      Radius: 0.029999999329447746
+      Shaft Diameter: 0.009999999776482582
+      Shaft Length: 0.019999999552965164
+      Topic:
+        Depth: 5
+        Durability Policy: Transient Local
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /path
       Value: true
   Enabled: true
   Global Options:

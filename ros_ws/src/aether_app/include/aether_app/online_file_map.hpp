@@ -1,3 +1,6 @@
+#ifndef _AETHER_APP_ONLINE_FILE_MAP_HPP_
+#define _AETHER_APP_ONLINE_FILE_MAP_HPP_
+
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -109,3 +112,5 @@ private:
     std::size_t height_;
     std::size_t width_;
 };
+
+#endif // _AETHER_APP_ONLINE_FILE_MAP_HPP_

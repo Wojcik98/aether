@@ -169,8 +169,7 @@ private:
         float dir_y = (yaw >= PI_F) ? -1.0f : 1.0f;
         float closest_dist = std::numeric_limits<float>::infinity();
 
-        auto [x_cell, y_cell] =
-            MapInterface<MapImpl>::get_cell_coords(tof_g.x, tof_g.y);
+        auto [x_cell, y_cell] = aether::map::get_cell_coords(tof_g.x, tof_g.y);
         const float start_x =
             (dir_x > 0) ? (x_cell + 1) * CELL_SIZE : x_cell * CELL_SIZE;
         const float start_y =

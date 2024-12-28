@@ -21,11 +21,9 @@ public:
     bool is_obstacle(float x, float y) const {
         constexpr float EPS = 0.003f;
         constexpr float WALL_THRES = CELL_INNER_SIZE / 2.0f - EPS;
-        auto [x_cell, y_cell] = map_.get_cell_coords(x, y);
+        auto [x_cell, y_cell] = aether::map::get_cell_coords(x, y);
         auto walls = map_.get_cell_walls(x_cell, y_cell);
-        // relative coordinates, (0, 0) is the middle of the cell
-        float x_rel = x - x_cell * CELL_SIZE - CELL_SIZE / 2.0f;
-        float y_rel = y - y_cell * CELL_SIZE - CELL_SIZE / 2.0f;
+        auto [x_rel, y_rel] = aether::map::get_relative_coords(x, y);
 
         // check posts in the corners
         if (abs(x_rel) > WALL_THRES && abs(y_rel) > WALL_THRES) {

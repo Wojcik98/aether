@@ -103,6 +103,7 @@ class ConfigGenerator:
             "maze_size",
             "freq_imu_enc",
             "freq_tofs",
+            "freq_control",
             "chassis_size",
             "chassis_mass",
             "base_link_to_chassis",
