@@ -7,6 +7,7 @@ alias xs := xhost-stuff
 alias l := launch
 alias dt := dev-terminal
 alias ta := test-aether
+alias start := start-path
 
 default:
     @just --list
@@ -32,6 +33,9 @@ test-aether:
 
 launch:
     ros2 launch aether_bringup aether_sim.launch.py
+
+start-path:
+    ros2 service call /aether/start std_srvs/srv/Empty {}
 
 clean-ros:
     #!/bin/bash

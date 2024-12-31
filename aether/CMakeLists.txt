@@ -22,9 +22,11 @@ add_custom_command(
 add_library(${PROJECT_NAME} STATIC
     src/map_in_progress.cpp
     src/simple_planner.cpp
+    src/controller.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/aether/robot_config.hpp
 )
 
+target_compile_options(${PROJECT_NAME} PUBLIC -fPIC)
 target_include_directories(${PROJECT_NAME} PUBLIC
     include
     ../third_party/eigen

@@ -1,21 +1,23 @@
 import math
 import os
 
-from ament_index_python.packages import get_package_share_directory
-
-from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription
-from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.actions import EmitEvent, RegisterEventHandler
-from launch.event_handlers import OnProcessExit
-from launch.events import Shutdown
-from launch_ros.actions import ComposableNodeContainer
-from launch_ros.descriptions import ComposableNode
-
-from launch_ros.actions import Node
-
 import em
 import yaml
+from ament_index_python.packages import get_package_share_directory
+from launch import LaunchDescription
+from launch.actions import (
+    EmitEvent,
+    ExecuteProcess,
+    IncludeLaunchDescription,
+    RegisterEventHandler,
+    TimerAction,
+)
+from launch.event_handlers import OnProcessExit
+from launch.events import Shutdown
+from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.substitutions import FindExecutable
+from launch_ros.actions import ComposableNodeContainer, Node
+from launch_ros.descriptions import ComposableNode
 
 
 def generate_launch_description():
@@ -151,6 +153,35 @@ def generate_launch_description():
         extra_arguments=[{"use_intra_process_comms": True}],
     )
 
+    execute_path_component = ComposableNode(
+        package="aether_app",
+        plugin="ExecutePath",
+        name="execute_path",
+        namespace="aether",
+        parameters=[
+            {"path_path": path_config_path},
+            {"map_path": maze_config_path},
+            {"use_sim_time": True},
+        ],
+        extra_arguments=[{"use_intra_process_comms": True}],
+    )
+
+    start_service = ExecuteProcess(
+        cmd=[
+            FindExecutable(name="ros2"),
+            "service",
+            "call",
+            "/aether/start",
+            "std_srvs/srv/Empty",
+            "{}",
+        ],
+        output="screen",
+    )
+    delayed_start = TimerAction(
+        period=5.0,
+        actions=[start_service],
+    )
+
     mapped_localization_container = ComposableNodeContainer(
         name="mapped_localization_container",
         namespace="aether",
@@ -158,7 +189,8 @@ def generate_launch_description():
         executable="component_container",
         composable_node_descriptions=[
             sensors_sync_component,
-            mapped_localization_component,
+            # mapped_localization_component,
+            execute_path_component,
         ],
         output="screen",
     )
@@ -237,6 +269,7 @@ def generate_launch_description():
             map_visualizer,
             path_visualizer,
             mapped_localization_container,
+            # delayed_start,
             robot_state_publisher,
             rviz,
             lidar_to_range,

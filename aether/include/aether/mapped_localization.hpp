@@ -35,16 +35,18 @@ public:
         reset_particles();
     }
 
-    Pose get_latest_pose() {
-        Pose pose{0.0f, 0.0f, 0.0f};
+    FullState get_latest_pose() {
+        FullState state{0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
 
         for (const auto &particle : particles_) {
-            pose.x += particle.state.x * particle.weight;
-            pose.y += particle.state.y * particle.weight;
-            pose.yaw += particle.state.yaw * particle.weight;
+            state.x += particle.state.x * particle.weight;
+            state.y += particle.state.y * particle.weight;
+            state.yaw += particle.state.yaw * particle.weight;
+            state.vx += particle.state.vx * particle.weight;
+            state.omega += particle.state.omega * particle.weight;
         }
 
-        return pose;
+        return state;
     }
 
     std::array<Particle, NUM_PARTICLES> get_particles() { return particles_; }

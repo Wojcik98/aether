@@ -19,6 +19,7 @@ find_package(tf2_ros REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(aether_msgs REQUIRED)
+find_package(std_srvs REQUIRED)
 
 add_subdirectory(../../../aether aether)
 
@@ -82,6 +83,29 @@ rclcpp_components_register_node(
   EXECUTABLE mapped_localization_node
 )
 
+add_library(execute_path_component SHARED src/execute_path.cpp)
+target_include_directories(execute_path_component PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include/${PROJECT_NAME}>)
+target_compile_features(execute_path_component PUBLIC c_std_99 cxx_std_17)
+target_link_libraries(execute_path_component aether)
+ament_target_dependencies(execute_path_component
+  rclcpp
+  nav_msgs
+  sensor_msgs
+  tf2_ros
+  geometry_msgs
+  visualization_msgs
+  aether_msgs
+  rclcpp_components
+  std_srvs
+)
+rclcpp_components_register_node(
+  execute_path_component
+  PLUGIN "ExecutePath"
+  EXECUTABLE execute_path
+)
+
 ament_export_targets(export_sensors_sync_component)
 install(TARGETS sensors_sync_component
         EXPORT export_sensors_sync_component
@@ -98,10 +122,20 @@ install(TARGETS mapped_localization_component aether
         RUNTIME DESTINATION bin
 )
 
+ament_export_targets(export_execute_path_component)
+install(TARGETS execute_path_component
+        EXPORT export_execute_path_component
+        ARCHIVE DESTINATION lib
+        LIBRARY DESTINATION lib
+        RUNTIME DESTINATION bin
+)
+
 install(TARGETS
   map_visualizer
   mapped_localization_node
+  sensors_sync
   path_visualizer
+  execute_path
 
   DESTINATION lib/${PROJECT_NAME}
 )

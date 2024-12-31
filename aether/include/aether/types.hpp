@@ -12,6 +12,11 @@
 constexpr float PI_F = 3.14159265358979f;
 constexpr float PI_2_F = 1.57079632679490f;
 
+struct Twist {
+    float vx;
+    float omega;
+};
+
 struct FullState {
     float x;
     float y;
@@ -29,6 +34,11 @@ struct FullState {
             y + pose.x * sinf(yaw) + pose.y * cosf(yaw),
             yaw + pose.yaw,
         };
+    }
+
+    FullState operator-(const FullState &other) const {
+        return {x - other.x, y - other.y, yaw - other.yaw, vx - other.vx,
+                omega - other.omega};
     }
 };
 

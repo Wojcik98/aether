@@ -2,7 +2,6 @@
 
 #include <array>
 #include <cmath>
-#include <iostream>
 #include <string>
 
 static std::array<std::string, 5> abs_dir_str = {"NORTH", "WEST", "SOUTH",
@@ -29,11 +28,6 @@ void SimplePlanner::start(const FullState &state) {
     current_abs_dir_ = get_abs_dir(current_cell, path_.at(1));
     calculate_turn_params(current_cell, start_dir, current_abs_dir_);
     t_ = T_ / 2; // TODO: calculate initial t
-    std::cout << "current_abs_dir_: "
-              << abs_dir_str[static_cast<uint8_t>(current_abs_dir_)]
-              << std::endl;
-    std::cout << "turn_dir_: " << rel_dir_str[static_cast<uint8_t>(turn_dir_)]
-              << std::endl;
 }
 
 FullState SimplePlanner::get_next_state() {
@@ -52,11 +46,6 @@ FullState SimplePlanner::get_next_state() {
         current_abs_dir_ =
             get_abs_dir(path_.at(path_idx_), path_.at(path_idx_ + 1));
         calculate_turn_params(path_.at(path_idx_), prev_dir, current_abs_dir_);
-        std::cout << "current_abs_dir_: "
-                  << abs_dir_str[static_cast<uint8_t>(current_abs_dir_)]
-                  << std::endl;
-        std::cout << "turn_dir_: "
-                  << rel_dir_str[static_cast<uint8_t>(turn_dir_)] << std::endl;
     } else {
         t_ += dt;
     }
@@ -124,12 +113,10 @@ void SimplePlanner::calculate_turn_params(const CellCoords &current_cell,
         y0_ = cell_center_y + CELL_SIZE / 2.0f;
         th0_ = -PI_2_F;
         break;
+    case AbsDirection::STOP:
+        // Should never happen
+        break;
     }
-
-    std::cout << "cell_center: " << cell_center_x << ", " << cell_center_y
-              << std::endl;
-    std::cout << "x0: " << x0_ << ", y0: " << y0_ << ", th0: " << th0_
-              << std::endl;
 
     cos_th0_ = cosf(th0_);
     sin_th0_ = sinf(th0_);
