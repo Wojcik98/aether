@@ -1,6 +1,6 @@
 wall_width: 0.012
 cell_size: 0.18
-maze_size: [10, 10]
+maze_size: [16, 16]
 
 freq_imu_enc: 200
 freq_tofs: 100

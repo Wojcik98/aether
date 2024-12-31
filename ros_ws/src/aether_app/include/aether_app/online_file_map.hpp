@@ -11,9 +11,9 @@
 #include <aether/robot_config.hpp>
 
 using HorizontalWalls =
-    std::array<std::array<float, MAZE_SIZE_Y_CELLS + 1>, MAZE_SIZE_X_CELLS>;
-using VerticalWalls =
     std::array<std::array<float, MAZE_SIZE_Y_CELLS>, MAZE_SIZE_X_CELLS + 1>;
+using VerticalWalls =
+    std::array<std::array<float, MAZE_SIZE_Y_CELLS + 1>, MAZE_SIZE_X_CELLS>;
 
 /*
  * Loads map from a file in runtime.
@@ -42,7 +42,7 @@ public:
         }
 
         height_ = (map_lines.size() - 1) / 2;
-        width_ = (map_lines[0].size() - 1) / 2;
+        width_ = (map_lines[0].size() - 1) / 4;
 
         std::cout << "height: " << height_ << " width: " << width_ << std::endl;
 
@@ -50,10 +50,10 @@ public:
         for (std::size_t x = 0; x <= height_; ++x) {
             for (std::size_t y = 0; y < width_; ++y) {
                 int file_row = 2 * (height_ - x);
-                int file_col = 2 * y + 1;
+                int file_col = 4 * y + 1;
 
                 horizontal_walls_[x][y] =
-                    static_cast<float>(map_lines[file_row][file_col] == 'W');
+                    static_cast<float>(map_lines[file_row][file_col] == '-');
             }
         }
 
@@ -61,9 +61,9 @@ public:
         for (std::size_t x = 0; x < height_; ++x) {
             for (std::size_t y = 0; y <= width_; ++y) {
                 int file_row = 2 * (height_ - x) - 1;
-                int file_col = 2 * y;
+                int file_col = 4 * y;
                 vertical_walls_[x][y] =
-                    static_cast<float>(map_lines[file_row][file_col] == 'W');
+                    static_cast<float>(map_lines[file_row][file_col] == '|');
             }
         }
     }

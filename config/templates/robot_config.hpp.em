@@ -14,7 +14,7 @@ template <typename T> struct TofsData {
     const T left_diag;
     const T left_side;
 
-    const T &operator[](size_t i) const {
+    const T &operator[](uint32_t i) const {
         switch (i) {
         case 0:
             return right_side;
@@ -41,7 +41,7 @@ struct Pose {
 };
 using TofsPoses = TofsData<Pose>;
 
-static constexpr size_t NUM_TOFS = 6;
+static constexpr uint32_t NUM_TOFS = 6;
 
 // Poses of the TOFs relative to the base_link frame
 constexpr TofsPoses TOF_POSES = {

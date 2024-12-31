@@ -16,14 +16,14 @@ def decode_maze_from_text(path: str) -> Maze:
         lines = f.readlines()
     top_height = len(lines)
     height = (len(lines) - 1) // 2
-    width = (len(lines[0].strip()) - 1) // 2
+    width = (len(lines[0].strip()) - 1) // 4
 
     horizontal_walls = [
-        [lines[2 * row][2 * col + 1] == "W" for col in range(width)]
+        [lines[2 * row][4 * col + 1] == "-" for col in range(width)]
         for row in range(height, -1, -1)
     ]
     vertical_walls = [
-        [lines[2 * row - 1][2 * col] == "W" for col in range(width + 1)]
+        [lines[2 * row - 1][4 * col] == "|" for col in range(width + 1)]
         for row in range(height, 0, -1)
     ]
     return Maze(width, height, horizontal_walls, vertical_walls)

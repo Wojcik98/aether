@@ -1,7 +1,7 @@
-PWPWPWP
-W   W W
-P PWP P
-W     W
-P PWP P
-W W   W
-PWPWPWP
+o---o---o---o
+|       | G |
+o   o---o   o
+|           |
+o   o---o   o
+| S |       |
+o---o---o---o
