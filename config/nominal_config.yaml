@@ -9,13 +9,13 @@ freq_control: 100
 num_particles: 50
 num_eff_particles_threshold: 5
 
-chassis_size: [0.08, 0.08, 0.002]
+chassis_size: [0.08, 0.06, 0.002]
 chassis_mass: 0.03
 
 base_link_to_chassis: [0.01, 0.0, 0.0]
 
 wheel_radius: 0.01
-wheel_length: 0.01
+wheel_length: 0.007
 wheel_mass: 0.01
 
 motor_radius: 0.008
@@ -24,6 +24,6 @@ motor_mass: 0.02
 
 tof_range: 0.5
 tofs_poses:
-  side: [0.03, -0.035, -90]
+  side: [0.03, -0.025, -90]
   diag: [0.04, 0.015, -45]
   front: [0.04, -0.025, 0.0]
