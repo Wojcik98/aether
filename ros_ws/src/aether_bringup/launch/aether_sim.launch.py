@@ -44,9 +44,7 @@ def generate_launch_description():
     # Setup to launch the simulator and Gazebo world
     # world_path = os.path.join(pkg_project_gazebo, "worlds", "maze_test.sdf")
     world_path = "/tmp/maze.sdf"
-    maze_config_path = os.path.join(
-        pkg_project_bringup, "config", "mazes", "simple.txt"
-    )
+    maze_config_path = os.path.join(pkg_project_bringup, "config", "mazes", "50.txt")
     path_config_path = os.path.join(
         pkg_project_bringup, "config", "paths", "simple.txt"
     )
