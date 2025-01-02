@@ -21,12 +21,12 @@
 #include <aether_msgs/msg/tofs_synced.hpp>
 
 #include <aether/controller.hpp>
+#include <aether/dijkstra_path_finder.hpp>
 #include <aether/map_interface.hpp>
 #include <aether/mapped_localization.hpp>
 #include <aether/robot_config.hpp>
 #include <aether/simple_planner.hpp>
 
-#include "aether_app/file_path_finder.hpp"
 #include "aether_app/online_file_map.hpp"
 
 using namespace std::chrono_literals;
@@ -44,15 +44,22 @@ public:
         }
         RCLCPP_INFO(get_logger(), "Map path: %s", map_path_.c_str());
 
-        this->declare_parameter("path_path", "");
-        std::string path_path = this->get_parameter("path_path").as_string();
-        path_finder_.load_file(path_path);
-
         map_ = std::make_shared<OnlineFileMap>(map_path_);
         map_confident_ = std::make_shared<MapConfident<OnlineFileMap>>(*map_);
         localization_ = std::make_shared<MappedLocalization<OnlineFileMap>>(
             *map_confident_);
+        path_finder_ = std::make_shared<DijkstraPathFinder<OnlineFileMap>>(
+            *map_confident_);
+        planner_ =
+            std::make_shared<SimplePlanner>(path_finder_->path, 0.1f, 0.5f);
         RCLCPP_INFO(get_logger(), "Map loaded");
+
+        CellCoords start = {0, -1};
+        CellCoords goal = {
+            MAZE_SIZE_X_CELLS / 2,
+            -(int32_t)MAZE_SIZE_Y_CELLS / 2,
+        };
+        path_finder_->find_path(start, goal);
 
         imu_enc_sub_ = this->create_subscription<ImuEncSynced>(
             "imu_enc", 10,
@@ -83,8 +90,8 @@ private:
     std::shared_ptr<OnlineFileMap> map_;
     std::shared_ptr<MapConfident<OnlineFileMap>> map_confident_;
     std::shared_ptr<MappedLocalization<OnlineFileMap>> localization_;
-    FilePathFinder path_finder_;
-    SimplePlanner planner_{path_finder_.path, 0.1f, 0.5f};
+    std::shared_ptr<DijkstraPathFinder<OnlineFileMap>> path_finder_;
+    std::shared_ptr<SimplePlanner> planner_;
     Controller controller_;
     bool start_navigation_ = false;
 
@@ -107,7 +114,7 @@ private:
     void start_navigation(const std::shared_ptr<std_srvs::srv::Empty::Request>,
                           std::shared_ptr<std_srvs::srv::Empty::Response>) {
         auto state = localization_->get_latest_pose();
-        planner_.start(state);
+        planner_->start(state);
         start_navigation_ = true;
     }
 
@@ -181,9 +188,9 @@ private:
             return;
         }
 
-        auto target = planner_.get_next_state();
+        auto target = planner_->get_next_state();
         auto twist = controller_.get_twist(pose, target);
-        if (planner_.goal_reached()) {
+        if (planner_->goal_reached()) {
             RCLCPP_INFO(get_logger(), "Goal reached");
             start_navigation_ = false;
             twist.vx = 0.0f;

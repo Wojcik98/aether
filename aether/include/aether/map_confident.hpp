@@ -8,6 +8,13 @@
 
 template <class MapImpl> class MapConfident {
 public:
+    struct CellWalls {
+        bool north;
+        bool west;
+        bool south;
+        bool east;
+    };
+
     static constexpr float CONFIDENCE_THRESHOLD = 0.5f;
     MapConfident(MapInterface<MapImpl> &map) : map_(map) {}
 
@@ -49,6 +56,17 @@ public:
 
     bool is_out_of_bounds(float x, float y) const {
         return map_.is_out_of_bounds(x, y);
+    }
+
+    MapConfident::CellWalls get_cell_walls(int32_t x_cell,
+                                           int32_t y_cell) const {
+        auto walls = map_.get_cell_walls(x_cell, y_cell);
+        return {
+            walls.north > CONFIDENCE_THRESHOLD,
+            walls.west > CONFIDENCE_THRESHOLD,
+            walls.south > CONFIDENCE_THRESHOLD,
+            walls.east > CONFIDENCE_THRESHOLD,
+        };
     }
 
 private:

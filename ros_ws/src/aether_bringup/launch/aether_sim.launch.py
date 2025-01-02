@@ -45,9 +45,9 @@ def generate_launch_description():
     # world_path = os.path.join(pkg_project_gazebo, "worlds", "maze_test.sdf")
     world_path = "/tmp/maze.sdf"
     maze_config_path = os.path.join(pkg_project_bringup, "config", "mazes", "50.txt")
-    path_config_path = os.path.join(
-        pkg_project_bringup, "config", "paths", "simple.txt"
-    )
+    # path_config_path = os.path.join(
+    #     pkg_project_bringup, "config", "paths", "simple.txt"
+    # )
     world_template_path = os.path.join(
         pkg_project_gazebo, "worlds", "maze_from_config.sdf.em"
     )
@@ -116,7 +116,7 @@ def generate_launch_description():
         executable="path_visualizer",
         output="screen",
         parameters=[
-            {"path_path": path_config_path},
+            {"map_path": maze_config_path},
             {"use_sim_time": True},
         ],
     )
@@ -157,7 +157,6 @@ def generate_launch_description():
         name="execute_path",
         namespace="aether",
         parameters=[
-            {"path_path": path_config_path},
             {"map_path": maze_config_path},
             {"use_sim_time": True},
         ],

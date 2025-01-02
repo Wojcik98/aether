@@ -37,11 +37,6 @@ RelCoords get_relative_coords(float x, float y) {
 // and MapMock for testing.
 
 template <class T> struct MapInterface {
-    CellWalls get_cell_walls(float x, float y) const {
-        auto [x_cell, y_cell] = aether::map::get_cell_coords(x, y);
-        return get_cell_walls(x, y);
-    }
-
     CellWalls get_cell_walls(int32_t x, int32_t y) const {
         return static_cast<const T *>(this)->get_cell_walls(x, y);
     }
