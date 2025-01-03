@@ -14,6 +14,8 @@
 #include <sensor_msgs/msg/range.hpp>
 #include <std_msgs/msg/color_rgba.hpp>
 #include <std_srvs/srv/empty.hpp>
+#include <tf2/LinearMath/Quaternion.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 #include <tf2_ros/transform_broadcaster.h>
 #include <visualization_msgs/msg/marker.hpp>
 
@@ -36,7 +38,17 @@ public:
     ExecutePath(const rclcpp::NodeOptions &options)
         : Node("execute_path", options) {
         this->declare_parameter("map_path", "");
+        this->declare_parameter("kp_x", 1.0f);
+        this->declare_parameter("kp_y", 1.0f);
+        this->declare_parameter("kp_om", 1.0f);
+        this->declare_parameter("vx", 0.1f);
+        this->declare_parameter("om", 0.5f);
         map_path_ = this->get_parameter("map_path").as_string();
+        float kp_x = this->get_parameter("kp_x").as_double();
+        float kp_y = this->get_parameter("kp_y").as_double();
+        float kp_om = this->get_parameter("kp_om").as_double();
+        float vx = this->get_parameter("vx").as_double();
+        float om = this->get_parameter("om").as_double();
 
         if (map_path_.empty()) {
             RCLCPP_ERROR(get_logger(), "Map path is empty");
@@ -50,9 +62,12 @@ public:
             *map_confident_);
         path_finder_ = std::make_shared<DijkstraPathFinder<OnlineFileMap>>(
             *map_confident_);
-        planner_ =
-            std::make_shared<SimplePlanner>(path_finder_->path, 0.1f, 0.5f);
+        planner_ = std::make_shared<SimplePlanner>(path_finder_->path, vx, om);
         RCLCPP_INFO(get_logger(), "Map loaded");
+
+        controller_.set_KPx(kp_x);
+        controller_.set_KPy(kp_y);
+        controller_.set_KPom(kp_om);
 
         CellCoords start = {0, -1};
         CellCoords goal = {
@@ -163,6 +178,7 @@ private:
     }
 
     void control_callback() {
+        tf2::Quaternion q;
         auto pose = localization_->get_latest_pose();
         if (std::isnan(pose.x) || std::isnan(pose.y) || std::isnan(pose.yaw)) {
             RCLCPP_ERROR(get_logger(), "NaN pose");
@@ -178,10 +194,8 @@ private:
         transform.transform.translation.x = pose.x;
         transform.transform.translation.y = pose.y;
         transform.transform.translation.z = 0.0;
-        transform.transform.rotation.x = 0.0;
-        transform.transform.rotation.y = 0.0;
-        transform.transform.rotation.z = sin(pose.yaw / 2.0);
-        transform.transform.rotation.w = cos(pose.yaw / 2.0);
+        q.setRPY(0, 0, pose.yaw);
+        transform.transform.rotation = tf2::toMsg(q);
         tf_broadcaster_->sendTransform(transform);
 
         if (!start_navigation_) {
@@ -189,6 +203,18 @@ private:
         }
 
         auto target = planner_->get_next_state();
+        auto target_local = pose.to_pose().inverse() * target.to_pose();
+        geometry_msgs::msg::TransformStamped target_transform;
+        target_transform.header.stamp = this->now();
+        target_transform.header.frame_id = "base_link";
+        target_transform.child_frame_id = "target";
+        target_transform.transform.translation.x = target_local.x;
+        target_transform.transform.translation.y = target_local.y;
+        target_transform.transform.translation.z = 0.0;
+        q.setRPY(0, 0, target_local.yaw);
+        target_transform.transform.rotation = tf2::toMsg(q);
+        tf_broadcaster_->sendTransform(target_transform);
+
         auto twist = controller_.get_twist(pose, target);
         if (planner_->goal_reached()) {
             RCLCPP_INFO(get_logger(), "Goal reached");

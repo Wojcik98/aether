@@ -136,6 +136,9 @@ def generate_launch_description():
             ("tof_left_diag", "/aether/tof_left_diag/range"),
             ("tof_left_side", "/aether/tof_left_side/range"),
         ],
+        parameters=[
+            {"use_sim_time": True},
+        ],
         extra_arguments=[{"use_intra_process_comms": True}],
     )
 
@@ -159,6 +162,11 @@ def generate_launch_description():
         parameters=[
             {"map_path": maze_config_path},
             {"use_sim_time": True},
+            {"kp_x": 10.0},
+            {"kp_y": 8.0},
+            {"kp_om": 7.2},
+            {"vx": 0.3},
+            {"om": 0.5},
         ],
         extra_arguments=[{"use_intra_process_comms": True}],
     )
@@ -188,6 +196,9 @@ def generate_launch_description():
             sensors_sync_component,
             # mapped_localization_component,
             execute_path_component,
+        ],
+        parameters=[
+            {"use_sim_time": True},
         ],
         output="screen",
     )

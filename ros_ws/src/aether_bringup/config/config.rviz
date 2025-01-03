@@ -111,28 +111,43 @@ Visualization Manager:
       Tree:
         map:
           base_link:
-            chassis_link: {}
-            imu_link: {}
-            left_front_wheel: {}
-            left_motor_link: {}
-            left_rear_wheel: {}
-            right_front_wheel: {}
-            right_motor_link: {}
-            right_rear_wheel: {}
+            chassis_link:
+              {}
+            imu_link:
+              {}
+            left_front_wheel:
+              {}
+            left_motor_link:
+              {}
+            left_rear_wheel:
+              {}
+            right_front_wheel:
+              {}
+            right_motor_link:
+              {}
+            right_rear_wheel:
+              {}
             tof_left_diag_link:
-              tof_left_diag_optical_frame: {}
+              tof_left_diag_optical_frame:
+                {}
             tof_left_front_link:
-              tof_left_front_optical_frame: {}
+              tof_left_front_optical_frame:
+                {}
             tof_left_side_link:
-              tof_left_side_optical_frame: {}
+              tof_left_side_optical_frame:
+                {}
             tof_right_diag_link:
-              tof_right_diag_optical_frame: {}
+              tof_right_diag_optical_frame:
+                {}
             tof_right_front_link:
-              tof_right_front_optical_frame: {}
+              tof_right_front_optical_frame:
+                {}
             tof_right_side_link:
-              tof_right_side_optical_frame: {}
+              tof_right_side_optical_frame:
+                {}
           odom:
-            base_link_enc: {}
+            base_link_enc:
+              {}
       Update Interval: 0
       Value: true
     - Alpha: 1
@@ -146,20 +161,118 @@ Visualization Manager:
         History Policy: Keep Last
         Reliability Policy: Reliable
         Value: /robot_description
-      Enabled: false
+      Enabled: true
       Links:
         All Links Enabled: true
         Expand Joint Details: false
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
+        base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        chassis_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        imu_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        left_front_wheel:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        left_motor_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        left_rear_wheel:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        right_front_wheel:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        right_motor_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        right_rear_wheel:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        tof_left_diag_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        tof_left_diag_optical_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        tof_left_front_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        tof_left_front_optical_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        tof_left_side_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        tof_left_side_optical_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        tof_right_diag_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        tof_right_diag_optical_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        tof_right_front_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        tof_right_front_optical_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        tof_right_side_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        tof_right_side_optical_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
       Mass Properties:
         Inertia: false
         Mass: false
       Name: RobotModel
       TF Prefix: ""
       Update Interval: 0
-      Value: false
+      Value: true
       Visual Enabled: true
     - Class: rviz_common/Group
       Displays:
@@ -265,7 +378,7 @@ Visualization Manager:
       Enabled: true
       Name: Marker
       Namespaces:
-        particles: true
+        {}
       Topic:
         Depth: 5
         Durability Policy: Volatile
@@ -348,25 +461,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 1.2190171480178833
+      Distance: 5.319173336029053
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.30571019649505615
-        Y: -0.1924286037683487
-        Z: 0.014007765799760818
+        X: 1.2400544881820679
+        Y: -0.9970375895500183
+        Z: 0.061825890094041824
       Focal Shape Fixed Size: false
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.499794602394104
+      Pitch: 1.519796371459961
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 3.1285367012023926
+      Yaw: 3.138537883758545
     Saved: ~
 Window Geometry:
   Displays:

@@ -6,14 +6,17 @@
 #include "aether/types.hpp"
 
 Twist Controller::get_twist(const FullState &current, const FullState &target) {
-    auto err = target - current;
+    // calculate target frame in current frame
+    auto target_local = current.to_pose().inverse() * target.to_pose();
+
+    if (target_local.yaw > PI_F) {
+        target_local.yaw -= 2 * PI_F;
+    } else if (target_local.yaw < -PI_F) {
+        target_local.yaw += 2 * PI_F;
+    }
+
     Twist twist;
-
-    float err_dist = sqrtf(err.x * err.x + err.y * err.y);
-    float err_angle = atan2f(err.y, err.x) - current.yaw;
-
-    twist.vx = target.vx + KPx * err_dist;
-    twist.omega = target.omega + KPom * err_angle;
-
+    twist.vx = target.vx + KPx * target_local.x;
+    twist.omega = target.omega + KPom * target_local.yaw + KPy * target_local.y;
     return twist;
 }

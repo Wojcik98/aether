@@ -40,6 +40,8 @@ struct FullState {
         return {x - other.x, y - other.y, yaw - other.yaw, vx - other.vx,
                 omega - other.omega};
     }
+
+    Pose to_pose() const { return {x, y, yaw}; }
 };
 
 struct TofReading {

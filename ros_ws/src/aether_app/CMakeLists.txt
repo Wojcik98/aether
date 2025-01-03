@@ -94,6 +94,7 @@ ament_target_dependencies(execute_path_component
   nav_msgs
   sensor_msgs
   tf2_ros
+  tf2_geometry_msgs
   geometry_msgs
   visualization_msgs
   aether_msgs

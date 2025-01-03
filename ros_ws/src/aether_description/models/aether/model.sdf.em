@@ -170,10 +170,10 @@ empy.include(template_path("motor.sdf.em"), {
             <right_joint>right_rear_wheel_joint</right_joint>
             <wheel_separation>@(config["wheel_base"])</wheel_separation>
             <wheel_radius>@(wheel_radius)</wheel_radius>
-            <min_linear_acceleration>-1.0</min_linear_acceleration>
-            <max_linear_acceleration>1.0</max_linear_acceleration>
-            <min_angular_acceleration>-5.0</min_angular_acceleration>
-            <max_angular_acceleration>5.0</max_angular_acceleration>
+            <min_linear_acceleration>-10.0</min_linear_acceleration>
+            <max_linear_acceleration>10.0</max_linear_acceleration>
+            <min_angular_acceleration>-50.0</min_angular_acceleration>
+            <max_angular_acceleration>50.0</max_angular_acceleration>
             <odom_publish_frequency>@(config["freq_imu_enc"])</odom_publish_frequency>
             <frame_id>odom</frame_id>
             <child_frame_id>base_link_enc</child_frame_id>

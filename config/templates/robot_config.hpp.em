@@ -5,6 +5,7 @@ tofs_poses = config["tofs_poses"]
 #define _AETHER_INCLUDE_ROBOT_CONFIG_HPP_
 
 #include <cstdint>
+#include <cmath>
 
 template <typename T> struct TofsData {
     const T right_side;
@@ -38,6 +39,24 @@ struct Pose {
     float x;
     float y;
     float yaw;
+
+    Pose inverse() const {
+        // calculate inverse of pose
+        return {
+            -x * cosf(yaw) - y * sinf(yaw),
+            x * sinf(yaw) - y * cosf(yaw),
+            -yaw,
+        };
+    }
+
+    Pose operator*(const Pose &pose) const {
+        // transform pose from local to global frame
+        return {
+            x + pose.x * cosf(yaw) - pose.y * sinf(yaw),
+            y + pose.x * sinf(yaw) + pose.y * cosf(yaw),
+            yaw + pose.yaw,
+        };
+    }
 };
 using TofsPoses = TofsData<Pose>;
 
